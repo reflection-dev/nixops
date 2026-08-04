@@ -2,9 +2,9 @@
 #
 # Inputs:
 #   hosts   :: { <name> = { ip; system?; modules?; ...extraModuleFragment }; }
-#   sshKeys :: [ "ssh-ed25519 …" … ]     shared across every host
+#   sshKeys :: [ "ssh-ed25519 ..." ... ]     shared across every host
 #
-# Each `hosts.<name>` entry is data — its `modules` field lists NixOS module
+# Each `hosts.<name>` entry is data -- its `modules` field lists NixOS module
 # paths to import, and every other field becomes a NixOS-module fragment
 # assigned into the resulting configuration (so `ip` is set as
 # `nixops.host.ip`, arbitrary extras like `nixops.foo.enable = true` work

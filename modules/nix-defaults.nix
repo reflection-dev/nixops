@@ -17,7 +17,7 @@ in {
       default = "25.11";
       description = ''
         NixOS system.stateVersion. Set once when the host is first installed
-        and do not change afterwards — it pins version-sensitive defaults
+        and do not change afterwards -- it pins version-sensitive defaults
         (postgresql, etc.) to the initial install.
       '';
     };
