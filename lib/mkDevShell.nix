@@ -6,8 +6,9 @@
 #   ssh <name>             ssh via an ssh_config generated from the inventory
 #   install-host <name>    nixos-anywhere + sops-recipient inject + secrets prompt
 #   update-secrets [name]  interactive fill of any missing sops secrets
+#   deploy [name]          deploy-rs wrapper; all hosts, or one by name
 #
-# More lands in follow-up commits (deploy, add-host, new wizard).
+# More lands in follow-up commits (add-host, new wizard).
 { nixpkgs, deploy-rs }:
 { hosts, system, extraPackages ? [ ] }:
 let
@@ -39,13 +40,19 @@ let
     sops jq gum
     nixVersions.latest
   ]);
+
+  deployCmd = pkgs.writeShellApplication {
+    name = "deploy";
+    runtimeInputs = [ deploy-rs.packages.${system}.deploy-rs pkgs.gum ];
+    text = builtins.readFile ../scripts/deploy.sh;
+  };
 in
 pkgs.mkShell {
   packages = [
     ssh
     installHost
     updateSecrets
-    deploy-rs.packages.${system}.deploy-rs
+    deployCmd
   ] ++ (with pkgs; [
     sops age ssh-to-age
     nixos-anywhere
