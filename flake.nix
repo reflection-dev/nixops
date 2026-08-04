@@ -21,7 +21,18 @@
   };
 
   outputs = { self, nixpkgs, sops-nix, deploy-rs, ... }: {
-    # Populated in follow-up commits: nixosModules, lib.{mkNixosConfigs,
-    # mkDeploy, mkDevShell}, templates.default, apps.<system>.new.
+    nixosModules.default = {
+      imports = [
+        sops-nix.nixosModules.sops
+        ./modules
+      ];
+    };
+
+    lib = {
+      mkNixosConfigs = import ./lib/mkNixosConfigs.nix { inherit nixpkgs sops-nix self; };
+      mkDeploy       = import ./lib/mkDeploy.nix       { inherit deploy-rs; };
+    };
+
+    # Populated later: lib.mkDevShell, templates.default, apps.<system>.new.
   };
 }
