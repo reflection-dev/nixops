@@ -9,4 +9,5 @@
 #     modules = [ ./hosts/web-1 ];
 #   };
 
-{ }
+{
+}

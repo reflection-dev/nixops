@@ -1,18 +1,23 @@
-# add-host <name>
+# add-host [<name>]
 #
 # Interactive: prompts for the target IP (via gum), scaffolds
 # hosts/<name>/hardware-configuration.nix, and appends an entry to
 # hosts.nix keyed on <name>.
 #
+# If <name> is not given as an argument, prompts for it.
+#
 # Deliberately does not touch .sops.yaml -- that happens on `install-host`
 # when the host's SSH host key is known.
 
-if [ "$#" -lt 1 ]; then
-  gum log --level error "usage: add-host <name>"
-  exit 1
+if [ "$#" -ge 1 ]; then
+  NAME="$1"
+else
+  NAME="$(gum input --header "Host name" --placeholder "web-1")"
+  if [ -z "$NAME" ]; then
+    gum log --level error "no host name given -- aborting"
+    exit 1
+  fi
 fi
-
-NAME="$1"
 
 if [ ! -f hosts.nix ]; then
   gum log --level error "hosts.nix not found in CWD"
