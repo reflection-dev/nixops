@@ -1,5 +1,5 @@
 {
-  description = "nixops — generic NixOS fleet base: inventory-driven modules, deploy tooling, ops devShell";
+  description = "nixops -- generic NixOS fleet base: inventory-driven modules, deploy tooling, ops devShell";
 
   nixConfig = {
     extra-substituters = [ "https://nix-community.cachix.org" ];
@@ -31,8 +31,9 @@
     lib = {
       mkNixosConfigs = import ./lib/mkNixosConfigs.nix { inherit nixpkgs sops-nix self; };
       mkDeploy       = import ./lib/mkDeploy.nix       { inherit deploy-rs; };
+      mkDevShell     = import ./lib/mkDevShell.nix     { inherit nixpkgs deploy-rs; };
     };
 
-    # Populated later: lib.mkDevShell, templates.default, apps.<system>.new.
+    # Populated later: templates.default, apps.<system>.new.
   };
 }
