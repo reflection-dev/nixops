@@ -109,7 +109,7 @@ else
 fi
 crumb "age recipient: ${AGE_PUB:0:20}..."
 
-ADMIN_NAME="$(gum input --header "Admin recipient name" --value "admin_${USER}")"
+ADMIN_NAME="admin_${USER:-nixops}"
 crumb "admin: $ADMIN_NAME"
 
 # --- Scaffold ---
@@ -153,9 +153,11 @@ sed -i "s|- &admin_you   age1REPLACE_WITH_YOUR_LAPTOP_AGE_PUBLIC_KEY.*NIXOPS_ADM
 cd ..
 
 # --- Git ---
-if gum confirm "Initialise git repo?"; then
-  (cd "$NAME" && git init -q && git add -A && git commit -q -m "chore: scaffold fleet via nixops")
-fi
+# The scaffold is a flake; nix flake commands want a tracked file to
+# consider it "clean". Git init is unconditional -- no reason to leave
+# the freshly-created repo in a state that trips flake tooling.
+(cd "$NAME" && git init -q && git add -A && git commit -q -m "chore: scaffold fleet via nixops")
+crumb "git: initialised"
 
 gum style --border rounded --padding "0 1" --foreground 82 "created ./${NAME}/"
 cat <<EOF
