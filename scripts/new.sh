@@ -157,22 +157,12 @@ if gum confirm "Initialise git repo?"; then
   (cd "$NAME" && git init -q && git add -A && git commit -q -m "chore: scaffold fleet via nixops")
 fi
 
-# --- First host ---
-if gum confirm "Add a host now?"; then
-  (
-    cd "$NAME"
-    HOSTNAME_INPUT="$(gum input --header "Host name" --placeholder "web-1")"
-    if [ -n "$HOSTNAME_INPUT" ]; then
-      nix --extra-experimental-features "nix-command flakes" develop -c add-host "$HOSTNAME_INPUT" || true
-    fi
-  )
-fi
-
 gum style --border rounded --padding "0 1" --foreground 82 "created ./${NAME}/"
 cat <<EOF
 
 Next:
   cd ${NAME}
   nix develop
+  add-host <name>
   install-host <name>
 EOF
