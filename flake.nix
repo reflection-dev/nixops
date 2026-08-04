@@ -34,6 +34,11 @@
       mkDevShell     = import ./lib/mkDevShell.nix     { inherit nixpkgs deploy-rs; };
     };
 
-    # Populated later: templates.default, apps.<system>.new.
+    templates.default = {
+      path = ./templates/default;
+      description = "nixops instance -- new fleet scaffold";
+    };
+
+    # Populated later: apps.<system>.new.
   };
 }

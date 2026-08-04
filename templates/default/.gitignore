@@ -1,0 +1,7 @@
+result
+result-*
+.direnv/
+# install-host generates the target's ssh_host_ed25519_key here before
+# handing it off to nixos-anywhere. On success the local copy is removed,
+# but a failed run may leave one behind -- keep it out of git.
+secrets/*/

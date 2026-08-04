@@ -1,0 +1,4 @@
+keys:
+  - &admin_you   age1REPLACE_WITH_YOUR_LAPTOP_AGE_PUBLIC_KEY  # NIXOPS_ADMIN_LINE
+
+creation_rules: []
