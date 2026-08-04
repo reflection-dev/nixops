@@ -1,0 +1,35 @@
+[
+  {
+    "name": "Overview",
+    "docs": ["00-index.md"]
+  },
+  {
+    "name": "Foundations",
+    "docs": [
+      "01-what-is-nix.md",
+      "02-install-nix.md",
+      "03-nix-language.md",
+      "04-flakes.md",
+      "05-nixos-and-modules.md"
+    ]
+  },
+  {
+    "name": "Deploying",
+    "docs": [
+      "06-sops-nix.md",
+      "07-nixos-anywhere.md",
+      "08-deploy-rs.md",
+      "09-your-first-fleet.md",
+      "10-anatomy-of-an-instance.md"
+    ]
+  },
+  {
+    "name": "Operating",
+    "docs": [
+      "11-day-two-operations.md",
+      "12-writing-host-modules.md",
+      "13-troubleshooting.md",
+      "14-further-reading.md"
+    ]
+  }
+]
