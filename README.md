@@ -4,6 +4,18 @@ Generic NixOS fleet base -- inventory-driven modules, `deploy-rs` and
 `sops-nix` wiring, `nixos-anywhere` bootstrap, and an ops devShell with
 per-inventory ssh aliases + interactive wizards.
 
+## New to Nix?
+
+There is a full zero-to-fleet tutorial in [`docs/`](docs/00-index.md).
+Fourteen chapters, written for ops folks who have never touched Nix,
+NixOS, or flakes -- covering the language, the module system,
+`sops-nix`, `nixos-anywhere`, and `deploy-rs`, ending with a walkthrough
+of installing and operating a real fleet with this repo. Every chapter
+links to the canonical Nix docs (nix.dev, NixOS Manual, Zero to Nix,
+NixOS Wiki, Discourse) for deeper dives.
+
+Start with [docs/00-index.md](docs/00-index.md).
+
 ## Quick start
 
 ```
