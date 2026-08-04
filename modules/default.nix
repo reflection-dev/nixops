@@ -1,6 +1,10 @@
 { lib, ... }: {
   imports = [
-    # Filled in by follow-up commits: nix-defaults, ssh, sops, users, firewall.
+    ./nix-defaults.nix
+    ./ssh.nix
+    ./sops.nix
+    ./users.nix
+    ./firewall.nix
   ];
 
   options.nixops.host = {
