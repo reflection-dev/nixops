@@ -7,8 +7,10 @@
 #   install-host <name>    nixos-anywhere + sops-recipient inject + secrets prompt
 #   update-secrets [name]  interactive fill of any missing sops secrets
 #   deploy [name]          deploy-rs wrapper; all hosts, or one by name
+#   add-host <name>        interactive: prompt for IP, scaffold host dir, append to hosts.nix
 #
-# More lands in follow-up commits (add-host, new wizard).
+# The `new` wizard for scaffolding a whole fleet lands separately as an
+# app (`nix run <nixops> -- new <fleet>`).
 { nixpkgs, deploy-rs }:
 { hosts, system, extraPackages ? [ ] }:
 let
@@ -46,6 +48,8 @@ let
     runtimeInputs = [ deploy-rs.packages.${system}.deploy-rs pkgs.gum ];
     text = builtins.readFile ../scripts/deploy.sh;
   };
+
+  addHost = mkCmd "add-host" (with pkgs; [ gum gawk ]);
 in
 pkgs.mkShell {
   packages = [
@@ -53,6 +57,7 @@ pkgs.mkShell {
     installHost
     updateSecrets
     deployCmd
+    addHost
   ] ++ (with pkgs; [
     sops age ssh-to-age
     nixos-anywhere
