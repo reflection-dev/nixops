@@ -39,6 +39,23 @@
       description = "nixops instance -- new fleet scaffold";
     };
 
-    # Populated later: apps.<system>.new.
+    apps = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+        newCmd = pkgs.writeShellApplication {
+          name = "new";
+          runtimeInputs = with pkgs; [
+            gum age git gawk gnused coreutils findutils
+            nixVersions.latest
+          ];
+          text = ''
+            export TEMPLATE_DIR="${./templates/default}"
+          '' + builtins.readFile ./scripts/new.sh;
+        };
+        newApp = { type = "app"; program = "${newCmd.out}/bin/new"; };
+      in {
+        new = newApp;
+        default = newApp;
+      });
   };
 }
