@@ -30,60 +30,87 @@ fi
 
 gum style --border rounded --padding "0 1" --foreground 212 "new fleet: $NAME"
 
+# Small helper: after every answered step, print a one-line breadcrumb in
+# muted grey so the operator (and screencast viewers) keep the running
+# context above the next prompt.
+crumb() { gum style --foreground 244 "  > $1"; }
+
 DESCRIPTION="$(gum input --header "Description" --value "$NAME" --width 80)"
 if [ -z "$DESCRIPTION" ]; then DESCRIPTION="$NAME"; fi
+crumb "description: $DESCRIPTION"
 
 # --- SSH keys ---
 mapfile -t PUBKEYS < <(find "$HOME/.ssh" -maxdepth 1 -name "*.pub" -type f 2>/dev/null | sort)
 
 CHOSEN_KEYS=()
+
 if [ "${#PUBKEYS[@]}" -eq 0 ]; then
-  gum log --level info "no ~/.ssh/*.pub found -- enter one key at a time (empty line to finish)"
-  while :; do
-    line="$(gum input --header "SSH pubkey (empty to finish)" --width 100)"
-    if [ -z "$line" ]; then break; fi
-    CHOSEN_KEYS+=("$line")
-  done
+  gum log --level info "no ~/.ssh/*.pub found -- paste one ssh public key"
+  line="$(gum input --header "SSH pubkey" --placeholder "ssh-ed25519 AAAA..." --width 100)"
+  if [ -z "$line" ]; then
+    gum log --level error "no SSH key provided -- aborting"
+    exit 1
+  fi
+  CHOSEN_KEYS+=("$line")
+  crumb "ssh key: (pasted)"
 else
+  # Single-select from ~/.ssh/*.pub via gum choose. gum choose takes over
+  # the alternate screen for the duration of the picker; that is fine
+  # because it is one screen for one question. The choice + breadcrumb
+  # remains in scrollback afterwards. The instance flake.nix keeps the
+  # sshKeys list schema -- add more entries by editing it directly.
   labels=()
   for f in "${PUBKEYS[@]}"; do
-    labels+=("$(basename "$f")  --  $(cut -c1-70 < "$f")...")
+    labels+=("$(basename "$f")")
   done
-  mapfile -t SELECTED < <(printf "%s\n" "${labels[@]}" | gum choose --no-limit --header "SSH keys (space to toggle, enter to confirm)")
-  for sel in "${SELECTED[@]}"; do
-    base="${sel%%  --  *}"
-    key="$(cat "$HOME/.ssh/$base")"
-    CHOSEN_KEYS+=("$key")
-  done
-fi
 
-if [ "${#CHOSEN_KEYS[@]}" -eq 0 ]; then
-  gum log --level warn "no ssh keys selected -- root will be unreachable until you edit flake.nix"
+  chosen_base="$(printf "%s\n" "${labels[@]}" | \
+    gum choose --header "SSH key (one; add more later by editing flake.nix)")"
+
+  if [ -z "$chosen_base" ]; then
+    gum log --level error "no SSH key selected -- aborting"
+    exit 1
+  fi
+
+  key="$(cat "$HOME/.ssh/$chosen_base")"
+  if [ -z "$key" ]; then
+    gum log --level error "$chosen_base is empty -- aborting"
+    exit 1
+  fi
+  CHOSEN_KEYS+=("$key")
+  crumb "ssh key: $chosen_base"
 fi
 
 # --- Age key ---
+# Auto-use an existing key without prompting. Public key is derived from
+# the private-key file via `age-keygen -y` -- never read the private-key
+# file directly. Never write over an existing keys.txt.
 AGE_FILE="$HOME/.config/sops/age/keys.txt"
 AGE_PUB=""
+
 if [ -f "$AGE_FILE" ]; then
-  AGE_PUB="$(grep -oE 'age1[a-z0-9]+' "$AGE_FILE" | tail -1 || true)"
-  if [ -n "$AGE_PUB" ]; then
-    if ! gum confirm "Use age key $AGE_PUB from $AGE_FILE?"; then
-      AGE_PUB=""
+  AGE_PUB="$(age-keygen -y "$AGE_FILE" 2>/dev/null | tail -1 || true)"
+  if [ -z "$AGE_PUB" ]; then
+    gum log --level error "cannot derive age public key from $AGE_FILE (age-keygen -y failed)"
+    exit 1
+  fi
+else
+  if gum confirm "No age key at $AGE_FILE. Generate one?"; then
+    mkdir -p "$(dirname "$AGE_FILE")"
+    age-keygen -o "$AGE_FILE" 2>/dev/null
+    AGE_PUB="$(age-keygen -y "$AGE_FILE" | tail -1)"
+  else
+    AGE_PUB="$(gum input --header "age public key" --placeholder "age1..." --width 100)"
+    if [ -z "$AGE_PUB" ]; then
+      gum log --level error "no age recipient provided -- aborting"
+      exit 1
     fi
   fi
 fi
-
-if [ -z "$AGE_PUB" ]; then
-  if gum confirm "Generate a new age key at $AGE_FILE?"; then
-    mkdir -p "$(dirname "$AGE_FILE")"
-    age-keygen -o "$AGE_FILE"
-    AGE_PUB="$(grep -oE 'age1[a-z0-9]+' "$AGE_FILE" | tail -1)"
-  else
-    AGE_PUB="$(gum input --header "age public key" --placeholder "age1...")"
-  fi
-fi
+crumb "age recipient: ${AGE_PUB:0:20}..."
 
 ADMIN_NAME="$(gum input --header "Admin recipient name" --value "admin_${USER}")"
+crumb "admin: $ADMIN_NAME"
 
 # --- Scaffold ---
 cp -r "$TEMPLATE_DIR" "$NAME"
