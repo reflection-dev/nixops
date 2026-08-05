@@ -71,10 +71,14 @@ in {
     environment.etc."motd".text = ''
       nixops operator workstation
 
+      ~/.ssh and ~/.config/sops/age are mounted from the host state dir
+      (opsvm-launch prints its path on start; default
+      ~/.local/state/nixops-opsvm/ on the host). Anything you put there
+      survives poweroff and VM rebuilds.
+
         1. Generate an ssh key for this operator identity:
              ssh-keygen -t ed25519 -C opsvm -f ~/.ssh/id_ed25519 -N ""
         2. Generate an age key for sops-nix:
-             mkdir -p ~/.config/sops/age
              age-keygen -o ~/.config/sops/age/keys.txt
         3. Scaffold a fleet and drive it:
              nix run github:reflection-dev/nixops -- new my-fleet

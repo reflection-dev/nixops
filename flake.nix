@@ -62,6 +62,21 @@
                 { from = "host"; host.port = 2222; guest.port = 22; }
               ];
             };
+            # 9p mounts backed by the host state dir (opsvm-launch wraps
+            # run-opsvm-vm with matching -virtfs args). nofail so a bare
+            # run-opsvm-vm invocation still boots to a login prompt.
+            fileSystems."/root/.ssh" = {
+              device = "opsssh";
+              fsType = "9p";
+              options = [ "trans=virtio" "version=9p2000.L" "cache=loose" "nofail" "msize=104857600" ];
+              neededForBoot = false;
+            };
+            fileSystems."/root/.config/sops/age" = {
+              device = "opsage";
+              fsType = "9p";
+              options = [ "trans=virtio" "version=9p2000.L" "cache=loose" "nofail" "msize=104857600" ];
+              neededForBoot = false;
+            };
           })
         ];
       }).config.system.build.vm;
@@ -81,10 +96,14 @@
           '' + builtins.readFile ./scripts/new.sh;
         };
         newApp = { type = "app"; program = "${newCmd.out}/bin/new"; };
-        opsvmApp = {
-          type = "app";
-          program = "${self.packages.${system}.opsvm}/bin/run-opsvm-vm";
+        opsvmLauncher = pkgs.writeShellApplication {
+          name = "opsvm-launch";
+          runtimeInputs = with pkgs; [ coreutils ];
+          text = ''
+            export RAW_VM="${self.packages.${system}.opsvm}"
+          '' + builtins.readFile ./scripts/opsvm-launch.sh;
         };
+        opsvmApp = { type = "app"; program = "${opsvmLauncher}/bin/opsvm-launch"; };
       in {
         new = newApp;
         default = newApp;
