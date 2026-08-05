@@ -1,6 +1,13 @@
-{ config, lib, pkgs, ... }: let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
   cfg = config.nixops.opsWorkstation;
-in {
+in
+{
   options.nixops.opsWorkstation = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -51,8 +58,14 @@ in {
 
   config = lib.mkIf cfg.enable {
     nix.settings = {
-      experimental-features = [ "nix-command" "flakes" ];
-      trusted-users = [ "root" cfg.user ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      trusted-users = [
+        "root"
+        cfg.user
+      ];
       substituters = [
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"
@@ -80,13 +93,23 @@ in {
 
     services.getty.autologinUser = lib.mkIf cfg.autologin cfg.user;
 
-    environment.systemPackages = (with pkgs; [
-      git jq curl vim tmux less openssh
-      sops age ssh-to-age
-      gum
-      nixos-anywhere
-      deploy-rs
-    ]) ++ cfg.extraPackages;
+    environment.systemPackages =
+      (with pkgs; [
+        git
+        jq
+        curl
+        vim
+        tmux
+        less
+        openssh
+        sops
+        age
+        ssh-to-age
+        gum
+        nixos-anywhere
+        deploy-rs
+      ])
+      ++ cfg.extraPackages;
 
     environment.etc."motd".text = ''
       nixops operator workstation -- logged in as ${cfg.user}

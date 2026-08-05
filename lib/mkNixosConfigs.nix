@@ -9,27 +9,44 @@
 # assigned into the resulting configuration (so `ip` is set as
 # `nixops.host.ip`, arbitrary extras like `nixops.foo.enable = true` work
 # naturally).
-{ nixpkgs, sops-nix, self }:
-{ hosts, sshKeys ? [ ] }:
+{
+  nixpkgs,
+  sops-nix,
+  self,
+}:
+{
+  hosts,
+  sshKeys ? [ ],
+}:
 let
   defaultSystem = "x86_64-linux";
 
-  mkOne = name: hostData:
+  mkOne =
+    name: hostData:
     let
-      system    = hostData.system  or defaultSystem;
+      system = hostData.system or defaultSystem;
       extraMods = hostData.modules or [ ];
       # Everything except `system` and `modules` becomes an inline module
       # fragment. `ip` is mapped to `nixops.host.ip`.
-      rest      = builtins.removeAttrs hostData [ "system" "modules" "ip" ];
-      hostFrag  = { nixops.host.ip = hostData.ip; } // rest;
-    in nixpkgs.lib.nixosSystem {
+      rest = builtins.removeAttrs hostData [
+        "system"
+        "modules"
+        "ip"
+      ];
+      hostFrag = {
+        nixops.host.ip = hostData.ip;
+      }
+      // rest;
+    in
+    nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = { inherit sshKeys; };
       modules = [
         self.nixosModules.default
         { networking.hostName = name; }
         hostFrag
-      ] ++ extraMods;
+      ]
+      ++ extraMods;
     };
 in
 builtins.mapAttrs mkOne hosts

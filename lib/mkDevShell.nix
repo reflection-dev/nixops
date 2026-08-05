@@ -12,44 +12,75 @@
 # The `new` wizard for scaffolding a whole fleet lands separately as an
 # app (`nix run <nixops> -- new <fleet>`).
 { nixpkgs, deploy-rs }:
-{ hosts, system, extraPackages ? [ ] }:
+{
+  hosts,
+  system,
+  extraPackages ? [ ],
+}:
 let
   pkgs = nixpkgs.legacyPackages.${system};
 
   sshConfig = pkgs.writeText "nixops-ssh-config" (
-    builtins.concatStringsSep "\n" (nixpkgs.lib.mapAttrsToList (name: h: ''
-      Host ${name}
-        HostName ${h.ip}
-        User root
-    '') hosts)
+    builtins.concatStringsSep "\n" (
+      nixpkgs.lib.mapAttrsToList (name: h: ''
+        Host ${name}
+          HostName ${h.ip}
+          User root
+      '') hosts
+    )
   );
 
   ssh = pkgs.writeShellScriptBin "ssh" ''
     exec ${pkgs.openssh}/bin/ssh -F ${sshConfig} "$@"
   '';
 
-  mkCmd = name: runtimeInputs: pkgs.writeShellApplication {
-    inherit name runtimeInputs;
-    text = builtins.readFile (../scripts + "/${name}.sh");
-  };
+  mkCmd =
+    name: runtimeInputs:
+    pkgs.writeShellApplication {
+      inherit name runtimeInputs;
+      text = builtins.readFile (../scripts + "/${name}.sh");
+    };
 
-  installHost = mkCmd "install-host" (with pkgs; [
-    sops age ssh-to-age nixos-anywhere openssh jq gum
-    nixVersions.latest
-  ]);
+  installHost = mkCmd "install-host" (
+    with pkgs;
+    [
+      sops
+      age
+      ssh-to-age
+      nixos-anywhere
+      openssh
+      jq
+      gum
+      nixVersions.latest
+    ]
+  );
 
-  updateSecrets = mkCmd "update-secrets" (with pkgs; [
-    sops jq gum
-    nixVersions.latest
-  ]);
+  updateSecrets = mkCmd "update-secrets" (
+    with pkgs;
+    [
+      sops
+      jq
+      gum
+      nixVersions.latest
+    ]
+  );
 
   deployCmd = pkgs.writeShellApplication {
     name = "deploy";
-    runtimeInputs = [ deploy-rs.packages.${system}.deploy-rs pkgs.gum ];
+    runtimeInputs = [
+      deploy-rs.packages.${system}.deploy-rs
+      pkgs.gum
+    ];
     text = builtins.readFile ../scripts/deploy.sh;
   };
 
-  addHost = mkCmd "add-host" (with pkgs; [ gum gawk ]);
+  addHost = mkCmd "add-host" (
+    with pkgs;
+    [
+      gum
+      gawk
+    ]
+  );
 in
 pkgs.mkShell {
   packages = [
@@ -58,11 +89,16 @@ pkgs.mkShell {
     updateSecrets
     deployCmd
     addHost
-  ] ++ (with pkgs; [
-    sops age ssh-to-age
+  ]
+  ++ (with pkgs; [
+    sops
+    age
+    ssh-to-age
     nixos-anywhere
-    jq gum
-  ]) ++ extraPackages;
+    jq
+    gum
+  ])
+  ++ extraPackages;
 
   shellHook = ''
     echo "nixops devShell -- ${toString (builtins.length (builtins.attrNames hosts))} host(s) in inventory"

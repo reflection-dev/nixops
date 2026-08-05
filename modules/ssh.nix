@@ -1,6 +1,8 @@
-{ config, lib, ... }: let
+{ config, lib, ... }:
+let
   cfg = config.nixops.ssh;
-in {
+in
+{
   options.nixops.ssh = {
     enable = lib.mkOption {
       type = lib.types.bool;

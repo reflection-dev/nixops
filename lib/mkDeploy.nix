@@ -4,10 +4,9 @@
 nixosConfigurations:
 builtins.mapAttrs (_name: nixosConfig: {
   hostname = nixosConfig.config.nixops.host.ip;
-  sshUser  = "root";
+  sshUser = "root";
   profiles.system = {
     user = "root";
-    path = deploy-rs.lib.${nixosConfig.pkgs.stdenv.hostPlatform.system}.activate.nixos
-      nixosConfig;
+    path = deploy-rs.lib.${nixosConfig.pkgs.stdenv.hostPlatform.system}.activate.nixos nixosConfig;
   };
 }) nixosConfigurations

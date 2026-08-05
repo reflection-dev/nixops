@@ -1,6 +1,8 @@
-{ config, lib, ... }: let
+{ config, lib, ... }:
+let
   cfg = config.nixops.firewall;
-in {
+in
+{
   options.nixops.firewall = {
     enable = lib.mkOption {
       type = lib.types.bool;

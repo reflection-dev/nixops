@@ -1,6 +1,13 @@
-{ config, lib, pkgs, ... }: let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
   cfg = config.nixops.nixDefaults;
-in {
+in
+{
   options.nixops.nixDefaults = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -30,7 +37,10 @@ in {
 
   config = lib.mkIf cfg.enable {
     nix.settings = {
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       auto-optimise-store = true;
       trusted-users = [ "root" ];
       substituters = [
@@ -52,9 +62,18 @@ in {
     time.timeZone = cfg.timeZone;
     i18n.defaultLocale = "en_US.UTF-8";
 
-    environment.systemPackages = (with pkgs; [
-      git vim htop curl wget rsync tmux jq
-    ]) ++ cfg.extraPackages;
+    environment.systemPackages =
+      (with pkgs; [
+        git
+        vim
+        htop
+        curl
+        wget
+        rsync
+        tmux
+        jq
+      ])
+      ++ cfg.extraPackages;
 
     system.stateVersion = cfg.stateVersion;
   };
