@@ -1,9 +1,10 @@
 ---
+title: "Your first fleet"
 time: "30-60 minutes of walltime; ~15 minutes of hands-on typing"
 ---
 # Your first fleet
 
-> **Prerequisite:** [What Nix is and why it matters](../overview/index.md). Also a Linux target you can wipe (a $5 VPS with root SSH access is ideal).
+> **Prerequisite:** the Foundations chapters ([What Nix is and why it matters](../foundations/what-is-nix.md) through [NixOS and the module system](../foundations/nixos-and-modules.md)) and [Secrets with sops-nix](sops-nix.md), [Remote install with nixos-anywhere](nixos-anywhere.md), and [Deploying with deploy-rs](deploy-rs.md). Also a Linux target you can wipe (a $5 VPS with root SSH access is ideal).
 >
 > **Outcome:** a git repo describing your fleet; a real NixOS host you installed remotely; a deploy round-trip.
 

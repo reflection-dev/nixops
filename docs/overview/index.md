@@ -1,3 +1,6 @@
+---
+title: "nixops -- Nix for Ops: a zero-to-fleet tutorial"
+---
 # nixops -- Nix for Ops: a zero-to-fleet tutorial
 
 This is a guided course for operations engineers who have never touched

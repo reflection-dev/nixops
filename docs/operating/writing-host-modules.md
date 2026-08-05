@@ -1,4 +1,5 @@
 ---
+title: "Writing host-specific modules"
 time: "45 minutes"
 ---
 # Writing host-specific modules
@@ -235,7 +236,7 @@ consumes it, restart when the secret changes.
       ExecStart       = "${pkgs.web-app}/bin/web-app";
       Restart         = "on-failure";
     };
-    restartTriggers = [ config.sops.secrets.stripe_secret ];
+    restartTriggers = [ config.sops.secrets.stripe_secret.sopsFile ];
   };
 
   users.users.web-app.isSystemUser = true;
@@ -245,8 +246,9 @@ consumes it, restart when the secret changes.
 ```
 
 - `sops.secrets.stripe_secret.path` is `/run/secrets/stripe_secret`.
-- `restartTriggers = [ config.sops.secrets.stripe_secret ]` makes
-  the service restart when the secret changes.
+- `restartTriggers = [ config.sops.secrets.stripe_secret.sopsFile ]`
+  makes the service restart when the encrypted secret file changes
+  (Nix hashes the `.sopsFile` path).
 - After adding this to a module, run `update-secrets web-1` to
   populate the value, then `deploy web-1`.
 

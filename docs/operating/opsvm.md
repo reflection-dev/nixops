@@ -1,4 +1,5 @@
 ---
+title: "Operating from an ephemeral workstation VM"
 time: "10 minutes"
 ---
 # Operating from an ephemeral workstation VM

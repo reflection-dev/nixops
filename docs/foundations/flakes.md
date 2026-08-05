@@ -1,4 +1,5 @@
 ---
+title: "Flakes"
 time: "30 minutes"
 ---
 # Flakes
@@ -103,7 +104,7 @@ avoiding three-way version skew.
 `flake.lock` is JSON. Each input is pinned by its Git commit hash
 plus the NAR hash of its contents. `nix flake update` refreshes
 every input to their latest URL-resolved revision and updates the
-lock. `nix flake lock --update-input X` refreshes just `X`.
+lock. `nix flake update X` refreshes just the input named `X`.
 
 You commit `flake.lock`. It is the point of flakes.
 
@@ -235,10 +236,12 @@ Build an output. Puts a `./result` symlink into CWD.
 Refresh every input to its latest URL-resolved revision. Commit the
 updated `flake.lock`.
 
-### `nix flake lock --update-input NAME`
+### `nix flake update NAME`
 
-Refresh a single input. Handy when you want to bump `nixpkgs`
-without touching `sops-nix`.
+Refresh a single input by name. Handy when you want to bump
+`nixpkgs` without touching `sops-nix`. (Older Nix used
+`nix flake lock --update-input NAME`; both work but the positional
+form is the modern one.)
 
 ### `nix flake metadata [FLAKE]`
 

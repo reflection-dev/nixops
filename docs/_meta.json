@@ -1,6 +1,36 @@
 {
-  "overview": "Overview",
-  "foundations": "Foundations",
-  "deploying": "Deploying",
-  "operating": "Operating"
+  "overview": {
+    "title": "Overview",
+    "pages": ["index"]
+  },
+  "foundations": {
+    "title": "Foundations",
+    "pages": [
+      "what-is-nix",
+      "install-nix",
+      "nix-language",
+      "flakes",
+      "nixos-and-modules"
+    ]
+  },
+  "deploying": {
+    "title": "Deploying",
+    "pages": [
+      "sops-nix",
+      "nixos-anywhere",
+      "deploy-rs",
+      "your-first-fleet",
+      "anatomy-of-an-instance"
+    ]
+  },
+  "operating": {
+    "title": "Operating",
+    "pages": [
+      "opsvm",
+      "day-two-operations",
+      "writing-host-modules",
+      "troubleshooting",
+      "further-reading"
+    ]
+  }
 }

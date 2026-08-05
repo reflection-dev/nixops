@@ -1,7 +1,0 @@
-{
-  "what-is-nix": "What Nix is and why it matters",
-  "install-nix": "Install Nix and enable flakes",
-  "nix-language": "The Nix language",
-  "flakes": "Flakes",
-  "nixos-and-modules": "NixOS and the module system"
-}

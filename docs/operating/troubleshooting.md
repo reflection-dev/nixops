@@ -1,4 +1,5 @@
 ---
+title: "Troubleshooting"
 time: "read once now; grep back when stuck"
 ---
 # Troubleshooting
@@ -49,7 +50,7 @@ are the most common cause.
 
 The first fetch of nixpkgs is a few hundred MB. Subsequent runs
 hit the store. If it stays slow, you may be missing a substituter:
-`nix show-config | grep substituters`. `cache.nixos.org` is
+`nix config show | grep substituters`. `cache.nixos.org` is
 mandatory; `nix-community.cachix.org` is nice-to-have.
 
 ### Slow evaluation
@@ -108,7 +109,7 @@ not.
 
 ## sops-nix
 
-### `sops-decrypt.service` fails at boot
+### `sops-install-secrets.service` fails at boot
 
 Journal shows "no age key found" or "failed to decrypt". Two
 causes:

@@ -1,7 +1,0 @@
-{
-  "sops-nix": "Secrets with sops-nix",
-  "nixos-anywhere": "Remote install with nixos-anywhere",
-  "deploy-rs": "Deploying with deploy-rs",
-  "your-first-fleet": "Your first fleet",
-  "anatomy-of-an-instance": "Anatomy of an instance repo"
-}

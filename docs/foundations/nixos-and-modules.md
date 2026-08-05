@@ -1,4 +1,5 @@
 ---
+title: "NixOS and the module system"
 time: "45 minutes"
 ---
 # NixOS and the module system
@@ -316,11 +317,12 @@ Reference: [NixOS Manual -- nixos-rebuild](https://nixos.org/manual/nixos/stable
 ## What next
 
 You now have the whole language stack: Nix, flakes, and the module
-system. The next two chapters cover the tools this fleet base is
-built around -- sops-nix for secrets (6), nixos-anywhere for
-bootstrap (7), and deploy-rs for continuous deploys (8) -- so that
-[Your first fleet](../deploying/your-first-fleet.md) can put them together with a full end-to-end walkthrough
-of the ops loop.
+system. The Deploying section covers the tools this fleet base is
+built around -- [sops-nix for secrets](../deploying/sops-nix.md),
+[nixos-anywhere for bootstrap](../deploying/nixos-anywhere.md), and
+[deploy-rs for continuous deploys](../deploying/deploy-rs.md) -- so
+that [Your first fleet](../deploying/your-first-fleet.md) can put
+them together with a full end-to-end walkthrough of the ops loop.
 
 Next: [Secrets with sops-nix](../deploying/sops-nix.md)
 

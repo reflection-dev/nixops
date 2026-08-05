@@ -1,4 +1,5 @@
 ---
+title: "Install Nix and enable flakes"
 time: "15 minutes"
 ---
 # Install Nix and enable flakes
@@ -144,7 +145,7 @@ they hit the store.
 - **`/nix` on a mounted volume is slow** -- that is a filesystem
   problem, not a Nix problem. Move `/nix` to a fast local disk.
 - **macOS + Apple silicon + Rosetta confusion** -- if you see
-  "unsupported system", check `nix show-config | grep system`; it
+  "unsupported system", check `nix config show | grep system`; it
   should be `aarch64-darwin`, not `x86_64-darwin`. If it is wrong,
   reinstall on an arm64 shell.
 

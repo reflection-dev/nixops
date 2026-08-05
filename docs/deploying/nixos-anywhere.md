@@ -1,4 +1,5 @@
 ---
+title: "Remote install with nixos-anywhere"
 time: "30 minutes"
 ---
 # Remote install with nixos-anywhere

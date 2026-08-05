@@ -1,4 +1,5 @@
 ---
+title: "Anatomy of an instance repo"
 time: "30 minutes"
 ---
 # Anatomy of an instance repo
@@ -88,17 +89,19 @@ What each piece is for:
   authoritative source for root's `authorized_keys` on every host.
   Add a colleague by appending to the list and running `deploy`.
 - **`nixosConfigurations = mkNixosConfigs { hosts; sshKeys; }`**.
-  [NixOS and the module system](../foundations/nixos-and-modules.md)'s `nixosSystem` factory, applied to each inventory
-  entry. Produces one config per host, all sharing the same base
-  modules ([NixOS and the module system](../foundations/nixos-and-modules.md)) plus their per-host modules.
-- **`deploy.nodes = mkDeploy self.nixosConfigurations`**.
-  [Deploying with deploy-rs](deploy-rs.md)'s factory. Turns each `nixosConfig` into a deploy-rs
-  node.
-- **`checks.${system}`**. [Deploying with deploy-rs](deploy-rs.md)'s `deployChecks`. Runs on `nix
-  flake check` / CI to catch broken deploys before they touch a
-  target.
-- **`devShells.${system}.default`**. [Your first fleet](your-first-fleet.md)'s devShell -- what
-  you get with `nix develop`.
+  The `nixosSystem` factory from
+  [NixOS and the module system](../foundations/nixos-and-modules.md),
+  applied to each inventory entry. Produces one config per host, all
+  sharing the same base modules plus their per-host modules.
+- **`deploy.nodes = mkDeploy self.nixosConfigurations`**. The
+  deploy-rs factory from [Deploying with deploy-rs](deploy-rs.md).
+  Turns each `nixosConfig` into a deploy-rs node.
+- **`checks.${system}`**. The `deployChecks` from
+  [Deploying with deploy-rs](deploy-rs.md). Runs on `nix flake check`
+  / CI to catch broken deploys before they touch a target.
+- **`devShells.${system}.default`**. The devShell described in
+  [Your first fleet](your-first-fleet.md) -- what you get with
+  `nix develop`.
 
 **When to edit:**
 

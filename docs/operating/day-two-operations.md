@@ -1,4 +1,5 @@
 ---
+title: "Day-two operations"
 time: "30 minutes for the reading; the rest is muscle memory"
 ---
 # Day-two operations
@@ -143,9 +144,11 @@ Drops you into `$EDITOR` with the plaintext. Change the value,
 save, exit. `sops` re-encrypts.
 
 Then `deploy web-1` -- sops-nix decrypts the new value, writes
-`/run/secrets/api_token`, and restarts services with
-`restartTriggers` on that path (add `restartTriggers = [
-config.sops.secrets.api_token ];` to the systemd service).
+`/run/secrets/api_token`, and restarts services that pinned the
+encrypted file as a restart trigger. Wire it up with
+`restartTriggers = [ config.sops.secrets.api_token.sopsFile ];` on
+the systemd service -- the `.sopsFile` path is what Nix hashes, so
+the trigger fires whenever the encrypted YAML changes.
 
 ## Adding an admin
 
@@ -280,7 +283,7 @@ Bump just one input (e.g. only `nixops` because you shipped a
 change to it upstream):
 
 ```console
-$ nix flake lock --update-input nixops
+$ nix flake update nixops
 ```
 
 ## Split deploys

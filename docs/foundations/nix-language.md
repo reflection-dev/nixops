@@ -1,4 +1,5 @@
 ---
+title: "The Nix language"
 time: "45 minutes -- longer if you follow along in `nix repl`"
 ---
 # The Nix language

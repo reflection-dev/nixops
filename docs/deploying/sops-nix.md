@@ -1,4 +1,5 @@
 ---
+title: "Secrets with sops-nix"
 time: "40 minutes"
 ---
 # Secrets with sops-nix
@@ -26,7 +27,8 @@ password. You want:
    web server should not be able to decrypt the database node's
    secrets).
 
-`sops` (Mozilla's [Secrets OPerationS](https://github.com/getsops/sops))
+[`sops`](https://github.com/getsops/sops) (Secrets OPerationS,
+originally by Mozilla, now maintained under the CNCF `getsops` org)
 provides (1) and (2). `age` is the modern encryption format sops
 uses (small keys, no PKI ceremony). `sops-nix` glues sops into
 NixOS's module system to give you (3) and (4).
@@ -239,10 +241,10 @@ Full option reference: [sops-nix README -- NixOS options](https://github.com/Mic
 
 ## How `update-secrets` works
 
-Every time you (or `install-host`) needs to fill in missing
+Every time you or `install-host` need to fill in missing
 secrets, `update-secrets [host]` in the devShell does the
 inventory-driven equivalent of running `sops` by hand. From the top
-of [`scripts/update-secrets.sh`](../scripts/update-secrets.sh):
+of [`scripts/update-secrets.sh`](../../scripts/update-secrets.sh):
 
 ```bash
 # Reads the expected keys from

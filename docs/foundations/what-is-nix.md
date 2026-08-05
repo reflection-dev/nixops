@@ -1,4 +1,5 @@
 ---
+title: "What Nix is and why it matters"
 time: "20 minutes of reading"
 ---
 # What Nix is and why it matters

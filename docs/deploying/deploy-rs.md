@@ -1,4 +1,5 @@
 ---
+title: "Deploying with deploy-rs"
 time: "30 minutes"
 ---
 # Deploying with deploy-rs
@@ -181,7 +182,7 @@ check` runs them. CI running `nix flake check` on every PR catches
 
 By default, `deploy .` deploys every node concurrently. Options:
 
-- `--target-hostname X` -- run the whole thing against just one
+- `--hostname X` -- run the whole thing against just one
   hostname, ignoring what the flake says.
 - `--interactive` -- pause between nodes and ask.
 - `--auto-rollback` and `--magic-rollback` -- both on by default.
@@ -242,10 +243,13 @@ the fleet base does not care.
 
 ## What next
 
-You now have the whole stack: Nix ([Install Nix and enable flakes](../foundations/install-nix.md)-4), NixOS ([NixOS and the module system](../foundations/nixos-and-modules.md)),
-sops-nix ([Secrets with sops-nix](sops-nix.md)), nixos-anywhere ([Remote install with nixos-anywhere](nixos-anywhere.md)), deploy-rs (this
-chapter). [Your first fleet](your-first-fleet.md) uses all of it to walk through actually
-scaffolding, installing, and deploying a fleet from zero.
+You now have the whole stack: the Foundations chapters cover Nix
+itself; the earlier Deploying chapters covered
+[Secrets with sops-nix](sops-nix.md) and
+[Remote install with nixos-anywhere](nixos-anywhere.md); and this
+one covered deploy-rs. [Your first fleet](your-first-fleet.md) uses
+all of it to walk through actually scaffolding, installing, and
+deploying a fleet from zero.
 
 Next: [Your first fleet](your-first-fleet.md)
 
