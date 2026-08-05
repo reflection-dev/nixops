@@ -1,10 +1,11 @@
+---
+time: "30 minutes"
+---
 # 10 -- Anatomy of an instance repo
 
-> Prerequisite: [Chapter 9](09-your-first-fleet.md) (you have a
-> scaffolded fleet repo).
-> Time: 30 minutes.
-> Outcome: you can point at any file in the fleet repo and say what
-> it does, why it exists, and when you edit it.
+> **Prerequisite:** [Chapter 9](your-first-fleet.md) (you have a scaffolded fleet repo).
+>
+> **Outcome:** you can point at any file in the fleet repo and say what it does, why it exists, and when you edit it.
 
 The `nix run ... -- new` wizard scaffolds five files. Everything
 after that is what you add. This chapter is the reference for those
@@ -303,7 +304,7 @@ naming.
 You know every file. Next chapter is the daily loop -- rotating
 keys, adding admins, splitting a deploy, diagnosing a failed one.
 
-Next: [Chapter 11 -- Day-two operations.](11-day-two-operations.md)
+Next: [Chapter 11 -- Day-two operations.](../operating/day-two-operations.md)
 
 ## References for this chapter
 

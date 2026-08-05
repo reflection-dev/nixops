@@ -1,9 +1,11 @@
+---
+time: "45 minutes -- longer if you follow along in `nix repl`"
+---
 # 03 -- The Nix language
 
-> Prerequisite: [Chapter 2](02-install-nix.md) (you have a working `nix` command).
-> Time: 45 minutes -- longer if you follow along in `nix repl`.
-> Outcome: you can read every construct in this repo's `flake.nix`,
-> `lib/*.nix`, and `modules/*.nix` without needing a lookup.
+> **Prerequisite:** [Chapter 2](install-nix.md) (you have a working `nix` command).
+>
+> **Outcome:** you can read every construct in this repo's `flake.nix`, `lib/*.nix`, and `modules/*.nix` without needing a lookup.
 
 The Nix language is small: a pure, lazy, functional expression
 language whose only job is to evaluate down to values -- attribute
@@ -345,7 +347,7 @@ repl` typing the examples. Reading Nix without having typed it is
 like reading Python from a screenshot; you will re-learn everything
 the first time you type it.
 
-Next: [Chapter 4 -- Flakes.](04-flakes.md)
+Next: [Chapter 4 -- Flakes.](flakes.md)
 
 ## References for this chapter
 

@@ -1,9 +1,8 @@
 # 14 -- Further reading
 
-> Prerequisite: [Chapter 13](13-troubleshooting.md), or just an
-> appetite.
-> Outcome: you know where to go for depth in every direction the
-> tutorial only touched on.
+> **Prerequisite:** [Chapter 13](troubleshooting.md), or just an appetite.
+>
+> **Outcome:** you know where to go for depth in every direction the tutorial only touched on.
 
 This is a curated list. Everything here is either canonical
 (official docs) or widely-endorsed by the community. No half-

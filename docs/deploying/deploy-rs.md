@@ -1,10 +1,11 @@
+---
+time: "30 minutes"
+---
 # 08 -- Deploying with deploy-rs
 
-> Prerequisite: [Chapter 7](07-nixos-anywhere.md).
-> Time: 30 minutes.
-> Outcome: you know what `deploy-rs` does that `nixos-rebuild` does
-> not; you understand magic-rollback; you can read
-> `lib/mkDeploy.nix` and the `deploy.nodes` output.
+> **Prerequisite:** [Chapter 7](nixos-anywhere.md).
+>
+> **Outcome:** you know what `deploy-rs` does that `nixos-rebuild` does not; you understand magic-rollback; you can read `lib/mkDeploy.nix` and the `deploy.nodes` output.
 
 Once a NixOS host exists (courtesy of Chapter 7), you need to keep
 updating it -- new package versions, new services, security fixes.
@@ -246,7 +247,7 @@ sops-nix (Chapter 6), nixos-anywhere (Chapter 7), deploy-rs (this
 chapter). Chapter 9 uses all of it to walk through actually
 scaffolding, installing, and deploying a fleet from zero.
 
-Next: [Chapter 9 -- Your first fleet.](09-your-first-fleet.md)
+Next: [Chapter 9 -- Your first fleet.](your-first-fleet.md)
 
 ## References for this chapter
 

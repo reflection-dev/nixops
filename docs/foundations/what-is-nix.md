@@ -1,8 +1,11 @@
+---
+time: "20 minutes of reading"
+---
 # 01 -- What Nix is and why it matters
 
-> Prerequisite: none.
-> Time: 20 minutes of reading.
-> Outcome: a working mental model of Nix, NixOS, and where `nixops` fits.
+> **Prerequisite:** none.
+>
+> **Outcome:** a working mental model of Nix, NixOS, and where `nixops` fits.
 
 You do not need to touch a keyboard for this chapter. It exists so
 that when Chapter 3 tells you to write `{ pkgs, ... }: { ... }`, you
@@ -198,7 +201,7 @@ back when a term feels familiar-but-fuzzy.
   step that touches your filesystem outside your home directory.
   Read Chapter 2 in full before running any of its commands.
 
-Ready? [Chapter 2 -- Install Nix and enable flakes.](02-install-nix.md)
+Ready? [Chapter 2 -- Install Nix and enable flakes.](install-nix.md)
 
 ## References for this chapter
 

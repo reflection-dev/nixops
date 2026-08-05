@@ -1,9 +1,11 @@
+---
+time: "15 minutes"
+---
 # 02 -- Install Nix and enable flakes
 
-> Prerequisite: [Chapter 1](01-what-is-nix.md).
-> Time: 15 minutes.
-> Outcome: `nix run nixpkgs#hello` prints "Hello, world!" from your
-> shell, on any Linux, macOS, or WSL2 workstation.
+> **Prerequisite:** [Chapter 1](what-is-nix.md).
+>
+> **Outcome:** `nix run nixpkgs#hello` prints "Hello, world!" from your shell, on any Linux, macOS, or WSL2 workstation.
 
 ## Which installer
 
@@ -169,7 +171,7 @@ Next: the language itself. You cannot read `flake.nix` or `hosts.nix`
 without knowing what an attribute set is, so we do that before
 touching flakes.
 
-Next: [Chapter 3 -- The Nix language.](03-nix-language.md)
+Next: [Chapter 3 -- The Nix language.](nix-language.md)
 
 ## References for this chapter
 

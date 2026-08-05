@@ -1,10 +1,11 @@
+---
+time: "30-60 minutes of walltime; ~15 minutes of hands-on typing"
+---
 # 09 -- Your first fleet
 
-> Prerequisite: [Chapters 1-8](00-index.md). Also a Linux target
-> you can wipe (a $5 VPS with root SSH access is ideal).
-> Time: 30-60 minutes of walltime; ~15 minutes of hands-on typing.
-> Outcome: a git repo describing your fleet; a real NixOS host you
-> installed remotely; a deploy round-trip.
+> **Prerequisite:** [Chapters 1-8](../overview/index.md). Also a Linux target you can wipe (a $5 VPS with root SSH access is ideal).
+>
+> **Outcome:** a git repo describing your fleet; a real NixOS host you installed remotely; a deploy round-trip.
 
 This is the payoff chapter. Everything so far has been context.
 Here you actually run the tools.
@@ -265,7 +266,7 @@ rotation, adding admins, splitting hosts across environments,
 diagnosing a failed deploy. Chapter 12 shows how to write your
 own host-specific modules (adding a real service, a disko layout).
 
-Next: [Chapter 10 -- Anatomy of an instance repo.](10-anatomy-of-an-instance.md)
+Next: [Chapter 10 -- Anatomy of an instance repo.](anatomy-of-an-instance.md)
 
 ## References for this chapter
 

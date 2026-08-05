@@ -46,20 +46,20 @@ someone else set up.
 
 | # | Chapter | Purpose |
 | - | ------- | ------- |
-| 01 | [What Nix is and why it matters](01-what-is-nix.md) | Mental model + comparisons to apt/Ansible/Docker |
-| 02 | [Install Nix and enable flakes](02-install-nix.md) | Get a working Nix on your workstation |
-| 03 | [The Nix language](03-nix-language.md) | Just enough to read this repo |
-| 04 | [Flakes](04-flakes.md) | Inputs, outputs, lock file, the `nix` CLI |
-| 05 | [NixOS and the module system](05-nixos-and-modules.md) | Declarative machines; options and config |
-| 06 | [Secrets with sops-nix](06-sops-nix.md) | age keys, `.sops.yaml`, `sops.secrets.*` |
-| 07 | [Remote install with nixos-anywhere](07-nixos-anywhere.md) | Install NixOS on any Linux target |
-| 08 | [Deploying with deploy-rs](08-deploy-rs.md) | Activation, rollback, checks |
-| 09 | [Your first fleet](09-your-first-fleet.md) | End-to-end walkthrough |
-| 10 | [Anatomy of an instance repo](10-anatomy-of-an-instance.md) | Every file the wizard produces |
-| 11 | [Day-two operations](11-day-two-operations.md) | The routine ops loop |
-| 12 | [Writing host-specific modules](12-writing-host-modules.md) | Adding services, disks, firewall holes |
-| 13 | [Troubleshooting](13-troubleshooting.md) | Failure modes and how to diagnose |
-| 14 | [Further reading](14-further-reading.md) | Curated links into the official docs |
+| 01 | [What Nix is and why it matters](../foundations/what-is-nix.md) | Mental model + comparisons to apt/Ansible/Docker |
+| 02 | [Install Nix and enable flakes](../foundations/install-nix.md) | Get a working Nix on your workstation |
+| 03 | [The Nix language](../foundations/nix-language.md) | Just enough to read this repo |
+| 04 | [Flakes](../foundations/flakes.md) | Inputs, outputs, lock file, the `nix` CLI |
+| 05 | [NixOS and the module system](../foundations/nixos-and-modules.md) | Declarative machines; options and config |
+| 06 | [Secrets with sops-nix](../deploying/sops-nix.md) | age keys, `.sops.yaml`, `sops.secrets.*` |
+| 07 | [Remote install with nixos-anywhere](../deploying/nixos-anywhere.md) | Install NixOS on any Linux target |
+| 08 | [Deploying with deploy-rs](../deploying/deploy-rs.md) | Activation, rollback, checks |
+| 09 | [Your first fleet](../deploying/your-first-fleet.md) | End-to-end walkthrough |
+| 10 | [Anatomy of an instance repo](../deploying/anatomy-of-an-instance.md) | Every file the wizard produces |
+| 11 | [Day-two operations](../operating/day-two-operations.md) | The routine ops loop |
+| 12 | [Writing host-specific modules](../operating/writing-host-modules.md) | Adding services, disks, firewall holes |
+| 13 | [Troubleshooting](../operating/troubleshooting.md) | Failure modes and how to diagnose |
+| 14 | [Further reading](../operating/further-reading.md) | Curated links into the official docs |
 
 ## Conventions
 
@@ -82,4 +82,4 @@ site, maintained by the NixOS Foundation. Every time this tutorial
 sends you elsewhere, it is usually there. Bookmark it before starting
 Chapter 1.
 
-Ready? [Start with Chapter 1.](01-what-is-nix.md)
+Ready? [Start with Chapter 1.](../foundations/what-is-nix.md)

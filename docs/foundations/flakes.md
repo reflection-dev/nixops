@@ -1,10 +1,11 @@
+---
+time: "30 minutes"
+---
 # 04 -- Flakes
 
-> Prerequisite: [Chapter 3](03-nix-language.md).
-> Time: 30 minutes.
-> Outcome: you can read and edit a `flake.nix`; you know how the
-> lock file works; you have used `nix run`, `nix develop`, `nix
-> build`, and `nix flake update`.
+> **Prerequisite:** [Chapter 3](nix-language.md).
+>
+> **Outcome:** you can read and edit a `flake.nix`; you know how the lock file works; you have used `nix run`, `nix develop`, `nix build`, and `nix flake update`.
 
 A **flake** is a git repository with a `flake.nix` at its root. That
 file declares the flake's *inputs* (its dependencies -- other
@@ -297,7 +298,7 @@ you already know about Nix expressions and adds the NixOS module
 system on top: how a NixOS configuration is assembled from many
 small modules, each declaring `options` and `config`.
 
-Next: [Chapter 5 -- NixOS and the module system.](05-nixos-and-modules.md)
+Next: [Chapter 5 -- NixOS and the module system.](nixos-and-modules.md)
 
 ## References for this chapter
 

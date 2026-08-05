@@ -1,10 +1,11 @@
+---
+time: "45 minutes"
+---
 # 05 -- NixOS and the module system
 
-> Prerequisite: [Chapter 4](04-flakes.md).
-> Time: 45 minutes.
-> Outcome: you can read every module in `modules/`; you know how
-> options merge; you can look up any NixOS option in the manual and
-> understand its type.
+> **Prerequisite:** [Chapter 4](flakes.md).
+>
+> **Outcome:** you can read every module in `modules/`; you know how options merge; you can look up any NixOS option in the manual and understand its type.
 
 NixOS is what you get when you point Nix's evaluator at "a whole
 operating system" instead of "a package". Everything about a running
@@ -321,7 +322,7 @@ bootstrap (7), and deploy-rs for continuous deploys (8) -- so that
 Chapter 9 can put them together with a full end-to-end walkthrough
 of the ops loop.
 
-Next: [Chapter 6 -- Secrets with sops-nix.](06-sops-nix.md)
+Next: [Chapter 6 -- Secrets with sops-nix.](../deploying/sops-nix.md)
 
 ## References for this chapter
 

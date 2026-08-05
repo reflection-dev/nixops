@@ -1,11 +1,11 @@
+---
+time: "40 minutes"
+---
 # 06 -- Secrets with sops-nix
 
-> Prerequisite: [Chapter 5](05-nixos-and-modules.md).
-> Time: 40 minutes.
-> Outcome: you understand what `.sops.yaml`, an age key, and
-> `sops.secrets.*` are; you know how a secret gets from your laptop
-> to `/run/secrets/<name>` on a NixOS host; you know how this repo's
-> `install-host` and `update-secrets` scripts orchestrate the flow.
+> **Prerequisite:** [Chapter 5](../foundations/nixos-and-modules.md).
+>
+> **Outcome:** you understand what `.sops.yaml`, an age key, and `sops.secrets.*` are; you know how a secret gets from your laptop to `/run/secrets/<name>` on a NixOS host; you know how this repo's `install-host` and `update-secrets` scripts orchestrate the flow.
 
 Managing secrets on Nix is a solved problem, and `sops-nix` is the
 solution this fleet base picks. If you have used HashiCorp Vault,
@@ -315,7 +315,7 @@ does not change. Details: [getsops/sops -- KMS](https://github.com/getsops/sops#
 You know the secret pipeline. Next is the first-boot pipeline:
 how a bare Linux target becomes a NixOS host without a rescue image.
 
-Next: [Chapter 7 -- Remote install with nixos-anywhere.](07-nixos-anywhere.md)
+Next: [Chapter 7 -- Remote install with nixos-anywhere.](nixos-anywhere.md)
 
 ## References for this chapter
 

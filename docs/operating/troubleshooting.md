@@ -1,9 +1,11 @@
+---
+time: "read once now; grep back when stuck"
+---
 # 13 -- Troubleshooting
 
-> Prerequisite: [Chapter 12](12-writing-host-modules.md).
-> Time: read once now; grep back when stuck.
-> Outcome: you recognise the common failure modes and know the first
-> two or three things to try before falling back to the community.
+> **Prerequisite:** [Chapter 12](writing-host-modules.md).
+>
+> **Outcome:** you recognise the common failure modes and know the first two or three things to try before falling back to the community.
 
 Nothing here is exhaustive. It is the collection of "this took me
 an hour the first time and 30 seconds the second" cases. When a
@@ -246,7 +248,7 @@ You have the whole tutorial. Chapter 14 is the curated further-
 reading list so you can go deeper into whichever piece piqued your
 interest.
 
-Next: [Chapter 14 -- Further reading.](14-further-reading.md)
+Next: [Chapter 14 -- Further reading.](further-reading.md)
 
 ## References for this chapter
 

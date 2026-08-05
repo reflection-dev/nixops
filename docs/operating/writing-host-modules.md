@@ -1,10 +1,11 @@
+---
+time: "45 minutes"
+---
 # 12 -- Writing host-specific modules
 
-> Prerequisite: [Chapter 11](11-day-two-operations.md).
-> Time: 45 minutes.
-> Outcome: you can add a service to a single host; you can write a
-> disko layout; you can extract a common module across hosts; you
-> can override one of the nixops defaults for a single host.
+> **Prerequisite:** [Chapter 11](day-two-operations.md).
+>
+> **Outcome:** you can add a service to a single host; you can write a disko layout; you can extract a common module across hosts; you can override one of the nixops defaults for a single host.
 
 The nixops base gives you a hardened but minimal NixOS: sshd,
 firewall, root user with your keys, weekly GC, UTC. Everything
@@ -362,7 +363,7 @@ You know how to add anything you would add on a Debian box, but
 now it lives in git and deploys deterministically. Chapter 13 is
 the failure manual for when things do not work.
 
-Next: [Chapter 13 -- Troubleshooting.](13-troubleshooting.md)
+Next: [Chapter 13 -- Troubleshooting.](troubleshooting.md)
 
 ## References for this chapter
 

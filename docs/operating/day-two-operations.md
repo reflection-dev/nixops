@@ -1,10 +1,11 @@
+---
+time: "30 minutes for the reading; the rest is muscle memory"
+---
 # 11 -- Day-two operations
 
-> Prerequisite: [Chapter 10](10-anatomy-of-an-instance.md).
-> Time: 30 minutes for the reading; the rest is muscle memory.
-> Outcome: you know every routine ops command by rote; you know
-> what to do when adding a host, adding a secret, adding an admin,
-> or rolling out a config change.
+> **Prerequisite:** [Chapter 10](../deploying/anatomy-of-an-instance.md).
+>
+> **Outcome:** you know every routine ops command by rote; you know what to do when adding a host, adding a secret, adding an admin, or rolling out a config change.
 
 Chapter 9 walked one full loop. This chapter is the reference for
 the *repeated* loops: what to run, in what order, when the fleet
@@ -327,7 +328,7 @@ host-specific modules -- adding a real service, a disk layout,
 overriding one of the nixops defaults for a single host. Chapter 13
 is the failure-mode manual.
 
-Next: [Chapter 12 -- Writing host-specific modules.](12-writing-host-modules.md)
+Next: [Chapter 12 -- Writing host-specific modules.](writing-host-modules.md)
 
 ## References for this chapter
 

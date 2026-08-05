@@ -1,10 +1,11 @@
+---
+time: "30 minutes"
+---
 # 07 -- Remote install with nixos-anywhere
 
-> Prerequisite: [Chapter 6](06-sops-nix.md).
-> Time: 30 minutes.
-> Outcome: you know how a Linux-of-any-kind target becomes a NixOS
-> host in one command, without a rescue image or console access;
-> you can read `scripts/install-host.sh` and understand every step.
+> **Prerequisite:** [Chapter 6](sops-nix.md).
+>
+> **Outcome:** you know how a Linux-of-any-kind target becomes a NixOS host in one command, without a rescue image or console access; you can read `scripts/install-host.sh` and understand every step.
 
 `nixos-anywhere` is a small tool from `nix-community` that installs
 NixOS on any reachable Linux target -- a cheap VPS running Debian,
@@ -217,7 +218,7 @@ next chapter covers how you keep updating that system over time --
 in a way that survives partial failures and lets you roll back
 safely.
 
-Next: [Chapter 8 -- Deploying with deploy-rs.](08-deploy-rs.md)
+Next: [Chapter 8 -- Deploying with deploy-rs.](deploy-rs.md)
 
 ## References for this chapter
 
