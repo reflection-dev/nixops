@@ -1,15 +1,42 @@
 # opsvm-launch: wrap the NixOS-generated run-opsvm-vm with a per-VM
 # state dir on the host and a runtime hostname pushed via fw_cfg.
 #
+# Usage: nix run <flake>#opsvm -- [<name>] [-- QEMU-OPTS...]
+#
+# The first non-flag positional is the VM name; anything after it is
+# forwarded to QEMU. Env OPSVM_NAME is the fallback when no positional
+# is given (default: opsvm). Name doubles as the state-dir slug
+# (<XDG_STATE_HOME>/nixops-opsvm/<name>/) and the guest hostname; must
+# be a valid short hostname.
+#
 # Env:
-#   OPSVM_NAME  VM name (default: opsvm). Doubles as the state-dir slug
-#               (<XDG_STATE_HOME>/nixops-opsvm/<name>/) and the guest
-#               hostname. Must be a valid short hostname.
+#   OPSVM_NAME  fallback when no positional arg is given.
 #   RAW_VM      set by the flake wrapper -- path to the built nixos-vm.
 
 set -euo pipefail
 
-name="${OPSVM_NAME:-opsvm}"
+if [ "${1-}" = "--help" ] || [ "${1-}" = "-h" ]; then
+  cat >&2 <<'HELP'
+Usage: nix run <flake>#opsvm -- [<name>] [QEMU-OPTS...]
+
+  <name>       VM name (default: $OPSVM_NAME or "opsvm"). Slug for the
+               host state dir and the guest hostname.
+
+State dir: ${XDG_STATE_HOME:-$HOME/.local/state}/nixops-opsvm/<name>/
+Contents:  opsvm.qcow2 (disk),
+           ssh/       -> guest /home/ops/.ssh
+           sops-age/  -> guest /home/ops/.config/sops/age
+HELP
+  exit 0
+fi
+
+# First positional is the name unless it looks like a flag (starts with `-`).
+name=""
+if [ $# -ge 1 ] && [ "${1#-}" = "$1" ]; then
+  name="$1"
+  shift
+fi
+name="${name:-${OPSVM_NAME:-opsvm}}"
 
 if ! printf '%s' "$name" | grep -Eq '^[a-zA-Z][a-zA-Z0-9-]{0,62}$'; then
   echo "opsvm: OPSVM_NAME must start with a letter and contain only [a-zA-Z0-9-] (up to 63 chars); got '$name'" >&2
