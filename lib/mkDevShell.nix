@@ -3,11 +3,12 @@
 # Commands (bash scripts in ../scripts/, wrapped as writeShellApplication so
 # shellcheck runs at build time and each command carries its own PATH):
 #
-#   ssh <name>             ssh via an ssh_config generated from the inventory
-#   install-host <name>    nixos-anywhere + sops-recipient inject + secrets prompt
-#   update-secrets [name]  interactive fill of any missing sops secrets
-#   deploy [name]          deploy-rs wrapper; all hosts, or one by name
-#   add-host <name>        interactive: prompt for IP, scaffold host dir, append to hosts.nix
+#   ssh <name>                 ssh via an ssh_config generated from the inventory
+#   install-host <name>        nixos-anywhere + sops-recipient inject + secrets prompt
+#   update-secrets [name]      interactive fill of any missing sops secrets
+#   set-secret <h> <k> <file>  non-interactive: write one secret from file or stdin
+#   deploy [name]              deploy-rs wrapper; all hosts, or one by name
+#   add-host <name>            interactive: prompt for IP, scaffold host dir, append to hosts.nix
 #
 # The `new` wizard for scaffolding a whole fleet lands separately as an
 # app (`nix run <nixops> -- new <fleet>`).
@@ -65,6 +66,17 @@ let
     ]
   );
 
+  setSecret = mkCmd "set-secret" (
+    with pkgs;
+    [
+      sops
+      jq
+      gum
+      coreutils
+      nixVersions.latest
+    ]
+  );
+
   deployCmd = pkgs.writeShellApplication {
     name = "deploy";
     runtimeInputs = [
@@ -95,6 +107,7 @@ pkgs.mkShell {
     ssh
     installHost
     updateSecrets
+    setSecret
     deployCmd
     addHost
   ]
