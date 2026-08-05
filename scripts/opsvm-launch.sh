@@ -32,8 +32,8 @@ chmod 700 "$state_dir" "$ssh_dir" "$age_dir"
 cat >&2 <<EOF
 opsvm state -> $state_dir
   qcow2 : $disk    (survives poweroff; rm to reset the VM)
-  ssh   : $ssh_dir -> guest /root/.ssh
-  age   : $age_dir -> guest /root/.config/sops/age
+  ssh   : $ssh_dir -> guest /home/ops/.ssh
+  age   : $age_dir -> guest /home/ops/.config/sops/age
 
 Override with OPSVM_STATE_DIR=<path>. Do NOT point it at your real
 ~/.ssh or ~/.config/sops/age -- the sandbox is the whole point.

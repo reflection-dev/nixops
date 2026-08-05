@@ -6,21 +6,38 @@ in {
       type = lib.types.bool;
       default = true;
       description = ''
-        Provision a machine as a nixops operator workstation: ops toolchain
-        (sops, age, ssh-to-age, gum, nixos-anywhere, deploy-rs), flakes and
-        the standard substituters, openssh key-only. Independent of the
-        VM shape -- reusable on any host that should double as a control
-        plane for a fleet.
+        Provision a machine as a nixops operator workstation: an unprivileged
+        `ops` user with the toolchain (sops, age, ssh-to-age, gum,
+        nixos-anywhere, deploy-rs) on PATH, flakes and the standard
+        substituters, openssh key-only, passwordless sudo. Independent of
+        the VM shape -- reusable on any host that should double as a
+        control plane for a fleet.
       '';
     };
 
-    autologinRoot = lib.mkOption {
+    user = lib.mkOption {
+      type = lib.types.str;
+      default = "ops";
+      description = "Unprivileged operator user name.";
+    };
+
+    uid = lib.mkOption {
+      type = lib.types.int;
+      default = 1000;
+      description = ''
+        Fixed uid for the operator user. Pinned so 9p host mounts can use
+        dfltuid=<this> and the mount root ends up ops-owned without an
+        extra chown step.
+      '';
+    };
+
+    autologin = lib.mkOption {
       type = lib.types.bool;
       default = true;
       description = ''
-        Autologin root on tty1/serial. Convenient for the ephemeral VM
-        (`nix run <nixops>#opsvm`); turn off before reusing this module
-        for anything long-lived.
+        Autologin the operator user on tty1/serial. Convenient for the
+        ephemeral VM (`nix run <nixops>#opsvm`); turn off before reusing
+        this module for anything long-lived.
       '';
     };
 
@@ -34,7 +51,7 @@ in {
   config = lib.mkIf cfg.enable {
     nix.settings = {
       experimental-features = [ "nix-command" "flakes" ];
-      trusted-users = [ "root" ];
+      trusted-users = [ "root" cfg.user ];
       substituters = [
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"
@@ -54,11 +71,22 @@ in {
       };
     };
 
-    services.getty.autologinUser = lib.mkIf cfg.autologinRoot "root";
+    users.users.${cfg.user} = {
+      isNormalUser = true;
+      uid = cfg.uid;
+      extraGroups = [ "wheel" ];
+      shell = pkgs.bash;
+      # Empty password unlocks only the local console; sshd still refuses
+      # password auth (disabled above) so remote access stays key-only.
+      initialHashedPassword = "";
+    };
 
-    # Empty password unlocks only the local console; sshd still refuses
-    # password auth (disabled above) so remote access stays key-only.
-    users.users.root.initialHashedPassword = "";
+    # Root exists for rescue only; no autologin, no fresh password.
+    users.users.root.initialHashedPassword = "!";
+
+    security.sudo.wheelNeedsPassword = false;
+
+    services.getty.autologinUser = lib.mkIf cfg.autologin cfg.user;
 
     environment.systemPackages = (with pkgs; [
       git jq curl vim tmux less openssh
@@ -69,7 +97,7 @@ in {
     ]) ++ cfg.extraPackages;
 
     environment.etc."motd".text = ''
-      nixops operator workstation
+      nixops operator workstation -- logged in as ${cfg.user}
 
       ~/.ssh and ~/.config/sops/age are mounted from the host state dir
       (opsvm-launch prints its path on start; default

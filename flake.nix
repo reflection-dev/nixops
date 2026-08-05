@@ -65,18 +65,27 @@
             # 9p mounts backed by the host state dir (opsvm-launch wraps
             # run-opsvm-vm with matching -virtfs args). nofail so a bare
             # run-opsvm-vm invocation still boots to a login prompt.
-            fileSystems."/root/.ssh" = {
+            # dfltuid/dfltgid map an empty mapped-xattr mount root to the
+            # ops user (uid 1000, primary group `users` gid 100), so no
+            # post-mount chown is needed.
+            fileSystems."/home/ops/.ssh" = {
               device = "opsssh";
               fsType = "9p";
-              options = [ "trans=virtio" "version=9p2000.L" "cache=loose" "nofail" "msize=104857600" ];
+              options = [ "trans=virtio" "version=9p2000.L" "cache=loose" "nofail" "msize=104857600" "dfltuid=1000" "dfltgid=100" ];
               neededForBoot = false;
             };
-            fileSystems."/root/.config/sops/age" = {
+            fileSystems."/home/ops/.config/sops/age" = {
               device = "opsage";
               fsType = "9p";
-              options = [ "trans=virtio" "version=9p2000.L" "cache=loose" "nofail" "msize=104857600" ];
+              options = [ "trans=virtio" "version=9p2000.L" "cache=loose" "nofail" "msize=104857600" "dfltuid=1000" "dfltgid=100" ];
               neededForBoot = false;
             };
+            # Parent dirs of the age mount -- systemd creates the leaf
+            # mountpoint but not intermediate directories.
+            systemd.tmpfiles.rules = [
+              "d /home/ops/.config       0755 ops users -"
+              "d /home/ops/.config/sops  0755 ops users -"
+            ];
           })
         ];
       }).config.system.build.vm;
