@@ -21,9 +21,14 @@ fi
 if [ -e "$NAME" ]; then
   # Allow populating in place when the directory is empty, or when the
   # only leftover is `.direnv/` from a prior scaffold. Preserving that
-  # cache lets `direnv exec . true` finish instantly on the re-scaffold
-  # (useful for repeated demo / test runs; harmless for real use).
-  leftovers=$(ls -A "$NAME" 2>/dev/null | grep -Fxv .direnv || true)
+  # cache lets the first `cd ${NAME}` skip the flake lock + devShell
+  # rebuild (useful for repeated demo / test runs; harmless for real
+  # use). `find -print -quit` bails at the first non-.direnv entry so
+  # we do not scan large trees.
+  leftovers=""
+  if [ -d "$NAME" ]; then
+    leftovers=$(find "$NAME" -mindepth 1 -maxdepth 1 ! -name .direnv -print -quit)
+  fi
   if [ -d "$NAME" ] && [ -z "$leftovers" ]; then
     : # empty (or only .direnv from a prior run) -- populate in place
   else
