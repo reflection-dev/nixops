@@ -13,13 +13,13 @@ _Your servers, as code. Reproducible, rollback-safe, rebuildable by any teammate
 </div>
 
 Built on [NixOS](https://nixos.org). A single repo describes your set of
-servers as plain data -- hostnames, secrets, disks, and per-host
+servers as plain data: hostnames, secrets, disks, and per-host
 configuration. Interactive wizards add hosts, provision secrets, install
 NixOS on any SSH-reachable Linux, and roll fleet-wide updates out with
-automatic rollback -- plus an ephemeral operator VM you can throw away.
+automatic rollback, plus an ephemeral operator VM you can throw away.
 
 > **New to NixOS?** The [zero-to-fleet tutorial](docs/overview/index.md) starts
-> from "what even is this" and ends with you running a real fleet -- no prior
+> from "what even is this" and ends with you running a real fleet. No prior
 > functional-programming or DevOps background required.
 
 ## Contents
@@ -88,14 +88,14 @@ Notes:
 - QEMU is bundled through Nix; the host only needs `/dev/kvm`.
 - Serial console autologins as `ops` (unprivileged, passwordless sudo).
   Exit QEMU with `Ctrl+A`, then `x`.
-- Different names get separate state dirs and disks -- juggle several
-  isolated workstations from one command.
+- Different names get separate state dirs and disks, so you can juggle
+  several isolated workstations from one command.
 - No inbound sshd; the VM initiates outbound ssh only (`nixos-anywhere`,
   `install-host`, ...).
 
 ## Instance repo layout
 
-Five files -- everything else grows as hosts are added.
+Five files. Everything else grows as hosts are added.
 
 ```
 my-fleet/
@@ -123,7 +123,7 @@ NixOS modules live under `hosts/<name>/` and are pulled in via the
 | `deploy [name]`         | `deploy-rs` wrapper: all nodes, or one by name                         |
 
 Plus in `PATH`: `sops`, `age`, `ssh-to-age`, `deploy-rs`, `nixos-anywhere`,
-`jq`, `gum`. All interactive prompts use `gum` -- no plain `read` UX.
+`jq`, `gum`. All interactive prompts use `gum`, not plain `read`.
 
 ## Flake outputs
 
@@ -156,7 +156,7 @@ sane cases). Any host can opt out of any individual piece.
 ## Bootstrap flow
 
 1. Have an age key at `~/.config/sops/age/keys.txt` (or let the wizard
-   generate one) -- its recipient goes into `.sops.yaml` as `&admin_<name>`.
+   generate one). Its recipient goes into `.sops.yaml` as `&admin_<name>`.
 2. `add-host <name>` scaffolds a host entry.
 3. `install-host <name>` runs `nixos-anywhere`:
    - generates the target's `ssh_host_ed25519_key` locally,
@@ -180,7 +180,7 @@ dives.
 
 ## Non-goals
 
-- **AI-specific tooling** (agents, coding assistants, model hosts) -- that
+- **AI-specific tooling** (agents, coding assistants, model hosts). That
   layer lives in [reflection-dev/castle](https://github.com/reflection-dev/castle),
   which will build on top of `nixops`.
 - **Hardware/disko recipes.** Every fleet's storage story is different;
@@ -194,7 +194,7 @@ dives.
 
 ## Contributing
 
-Issues and PRs welcome -- see [CONTRIBUTING.md](CONTRIBUTING.md) for the
+Issues and PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the
 development setup, the module/script conventions, and the PR checklist.
 Be kind ([Code of Conduct](CODE_OF_CONDUCT.md)); report vulnerabilities
 privately per [SECURITY.md](SECURITY.md).
