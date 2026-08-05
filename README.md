@@ -12,9 +12,9 @@ _Your servers, as code. Reproducible, rollback-safe, rebuildable by any teammate
 
 </div>
 
-Built on [NixOS](https://nixos.org). It wraps [`nixos-anywhere`](https://github.com/nix-community/nixos-anywhere)
-for one-command remote installs on any SSH-reachable Linux, [`deploy-rs`](https://github.com/serokell/deploy-rs)
-for fleet-wide updates with automatic rollback, and [`sops-nix`](https://github.com/Mic92/sops-nix)
+Built on [NixOS](https://nixos.org). It wraps [nixos-anywhere](https://github.com/nix-community/nixos-anywhere)
+for one-command remote installs on any SSH-reachable Linux, [deploy-rs](https://github.com/serokell/deploy-rs)
+for fleet-wide updates with automatic rollback, and [sops-nix](https://github.com/Mic92/sops-nix)
 for secret management that never leaves your laptop -- plus a scaffolding
 wizard and an ephemeral operator VM you can throw away.
 
