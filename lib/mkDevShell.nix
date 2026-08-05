@@ -6,7 +6,8 @@
 #   ssh <name>                 ssh via an ssh_config generated from the inventory
 #   install-host <name>        nixos-anywhere + sops-recipient inject + secrets prompt
 #   update-secrets [name]      interactive fill of any missing sops secrets
-#   set-secret <h> <k> <file>  non-interactive: write one secret from file or stdin
+#   set-secret <host> <key> <file>
+#                              non-interactive: write one secret from file or stdin
 #   deploy [name]              deploy-rs wrapper; all hosts, or one by name
 #   add-host <name>            interactive: prompt for IP, scaffold host dir, append to hosts.nix
 #

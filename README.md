@@ -123,7 +123,7 @@ how to swap in your own disk layout.
 | `add-host <name>`       | prompts for IP + disk layout preset, scaffolds `hosts/<name>/`, appends to `hosts.nix` |
 | `install-host <name>`   | `nixos-anywhere` (generates `hardware-configuration.nix`) + sops recipient inject + interactive secret prompts |
 | `update-secrets [name]` | interactively fill any `sops.secrets.*` not yet set                    |
-| `set-secret <h> <k> <f>` | non-interactive: write one secret from a file (or `-` for stdin)      |
+| `set-secret <host> <key> <file>` | non-interactive: write one secret from a file (or `-` for stdin) |
 | `deploy [name]`         | `deploy-rs` wrapper: all nodes, or one by name                         |
 
 Plus in `PATH`: `sops`, `age`, `ssh-to-age`, `deploy-rs`, `nixos-anywhere`,
