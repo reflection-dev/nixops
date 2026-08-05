@@ -74,13 +74,21 @@ let
     text = builtins.readFile ../scripts/deploy.sh;
   };
 
-  addHost = mkCmd "add-host" (
-    with pkgs;
-    [
+  addHost = pkgs.writeShellApplication {
+    name = "add-host";
+    runtimeInputs = with pkgs; [
       gum
       gawk
-    ]
-  );
+      coreutils
+    ];
+    # Nix-store path to the disko presets tree, injected so add-host can `cp`
+    # a chosen preset (e.g. Hetzner Cloud VM) into hosts/<name>/disko.nix
+    # without knowing where nixops itself lives on the host filesystem.
+    text = ''
+      export DISKO_PRESETS_DIR="${../templates/disko}"
+    ''
+    + builtins.readFile ../scripts/add-host.sh;
+  };
 in
 pkgs.mkShell {
   packages = [

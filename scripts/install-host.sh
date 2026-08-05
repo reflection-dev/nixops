@@ -38,6 +38,16 @@ if [ -z "$IP" ]; then
   exit 1
 fi
 
+# disko.nix is required for the target to boot at all. add-host either
+# copied a preset or told the operator to write one; if neither happened,
+# bail early with a clear message instead of a mid-install failure.
+if [ ! -f "hosts/${NAME}/disko.nix" ]; then
+  gum log --level error "hosts/${NAME}/disko.nix is missing"
+  gum log --level error "either re-run add-host and pick a preset, or write disko.nix by hand"
+  gum log --level error "  see docs/deploying/host-files.md"
+  exit 1
+fi
+
 gum style --border rounded --padding "0 1" "install ${NAME} @ ${IP}"
 
 # Refuse to wipe a target that is already NixOS unless --force.
@@ -162,8 +172,13 @@ fi
 
 gum style --border rounded --padding "0 1" "invoking nixos-anywhere on root@${IP}"
 
+# --generate-hardware-config runs nixos-generate-config on the target after
+# kexec into the installer and writes the result back into our flake before
+# the build. First install overwrites the placeholder from add-host;
+# subsequent --force reinstalls refresh it from live hardware.
 nixos-anywhere \
   --flake ".#${NAME}" \
+  --generate-hardware-config nixos-generate-config "hosts/${NAME}/hardware-configuration.nix" \
   --extra-files "$EXTRA" \
   "root@${IP}"
 
