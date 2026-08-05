@@ -107,8 +107,11 @@ my-fleet/
 ```
 
 Shared SSH keys live inline in `flake.nix` (one list, every host). Per-host
-NixOS modules live under `hosts/<name>/` and are pulled in via the
-`modules = [ ./hosts/<name> ];` field on the inventory entry.
+NixOS modules live under `hosts/<name>/` (`default.nix` + `disko.nix` +
+`hardware-configuration.nix`, all scaffolded by `add-host`) and are pulled
+in via the `modules = [ ./hosts/<name> ];` field on the inventory entry.
+See [Host files](docs/deploying/host-files.md) for what each file does and
+how to swap in your own disk layout.
 
 ## devShell commands
 
@@ -117,8 +120,8 @@ NixOS modules live under `hosts/<name>/` and are pulled in via the
 | command                 | what it does                                                           |
 | ----------------------- | ---------------------------------------------------------------------- |
 | `ssh <name>`            | ssh via a config generated from the inventory (`Host <name> ...`)      |
-| `add-host <name>`       | prompts for IP, scaffolds `hosts/<name>/`, appends to `hosts.nix`      |
-| `install-host <name>`   | `nixos-anywhere` + sops recipient inject + interactive secret prompts  |
+| `add-host <name>`       | prompts for IP + disk layout preset, scaffolds `hosts/<name>/`, appends to `hosts.nix` |
+| `install-host <name>`   | `nixos-anywhere` (generates `hardware-configuration.nix`) + sops recipient inject + interactive secret prompts |
 | `update-secrets [name]` | interactively fill any `sops.secrets.*` not yet set                    |
 | `deploy [name]`         | `deploy-rs` wrapper: all nodes, or one by name                         |
 
@@ -157,13 +160,17 @@ sane cases). Any host can opt out of any individual piece.
 
 1. Have an age key at `~/.config/sops/age/keys.txt` (or let the wizard
    generate one). Its recipient goes into `.sops.yaml` as `&admin_<name>`.
-2. `add-host <name>` scaffolds a host entry.
+2. `add-host <name>` scaffolds a host entry and prompts for a disk
+   layout preset (currently `hetzner-vm`, or `custom` for hand-written
+   `disko.nix`).
 3. `install-host <name>` runs `nixos-anywhere`:
    - generates the target's `ssh_host_ed25519_key` locally,
    - derives its age recipient (`ssh-to-age`),
    - appends `&<name>` to `.sops.yaml` + a `creation_rule` for
      `secrets/<name>.yaml`,
    - prompts for any missing `sops.secrets.*`,
+   - generates `hosts/<name>/hardware-configuration.nix` from live
+     hardware (`nixos-generate-config` on the target),
    - kexecs NixOS with the host key as `--extra-files`,
    - removes the local copy of the private key on success.
 4. Subsequent updates: `deploy <name>` (or `deploy` for the whole fleet).
@@ -183,9 +190,12 @@ dives.
 - **AI-specific tooling** (agents, coding assistants, model hosts). That
   layer lives in [reflection-dev/castle](https://github.com/reflection-dev/castle),
   which will build on top of `nixops`.
-- **Hardware/disko recipes.** Every fleet's storage story is different;
-  `nixops` does not ship parameterised disk layouts. Instances drop their
-  own `hosts/<name>/disko.nix` next to `hardware-configuration.nix`.
+- **A catalog of disko recipes.** `nixops` ships one preset per common
+  shape (currently just `hetzner-vm`, a single-disk UEFI VM) plus an
+  always-present `custom` option. It is not aiming to become a zoo of
+  provider-specific layouts; anything past the trivial single-disk case
+  is a `custom` disko.nix or a preset PR. See
+  [Host files](docs/deploying/host-files.md).
 - **Managed service modules** (Postgres, Redis, ...). Add these in the
   instance or in a purpose-specific library on top.
 - **Multi-cloud abstractions.** `install-host` works over any SSH target

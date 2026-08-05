@@ -119,68 +119,14 @@ and reference it via `modules = [ ./hosts/edge-1 ]`.
 
 ## Write a disko layout
 
-The nixops base intentionally does not ship a disko module -- disk
-layouts differ per host and shipping a default is worse than
-nothing. Write your own.
+nixops pulls disko in as a flake input and imports its module for
+every host, so `disko.devices` is available out of the box. During
+`add-host` you either pick a preset (e.g. `hetzner-vm`) and get a
+ready `hosts/<name>/disko.nix`, or pick `custom` and drop your own.
 
-Simplest, for a single-disk VPS:
-
-```nix
-# hosts/web-1/disko.nix
-{ ... }: {
-  disko.devices.disk.main = {
-    device = "/dev/vda";
-    type   = "disk";
-    content = {
-      type = "gpt";
-      partitions = {
-        ESP = {
-          size = "1G";
-          type = "EF00";
-          content = {
-            type       = "filesystem";
-            format     = "vfat";
-            mountpoint = "/boot";
-          };
-        };
-        root = {
-          size = "100%";
-          content = {
-            type       = "filesystem";
-            format     = "ext4";
-            mountpoint = "/";
-          };
-        };
-      };
-    };
-  };
-}
-```
-
-Then in `hosts/web-1/default.nix`:
-
-```nix
-{ ... }: {
-  imports = [
-    ./hardware-configuration.nix
-    ./disko.nix
-    (builtins.fetchTarball "https://github.com/nix-community/disko/archive/master.tar.gz" + "/module.nix")
-    # ^ or better: pull disko as a flake input in flake.nix and reference here
-  ];
-}
-```
-
-If you use disko, add it as a flake input in `flake.nix`:
-
-```nix
-inputs.disko.url = "github:nix-community/disko";
-inputs.disko.inputs.nixpkgs.follows = "nixpkgs";
-```
-
-And update your host module to `imports = [ inputs.disko.nixosModules.disko ./disko.nix ];`.
-
-More disko examples: [nix-community/disko/tree/master/example](https://github.com/nix-community/disko/tree/master/example)
-and the Wiki [nixos-wiki/wiki/Disko](https://wiki.nixos.org/wiki/Disko).
+Full walkthrough with examples (single-disk ext4, ZFS mirror,
+escape hatches, contributing a preset back) lives in
+[Host files: disko, hardware-config, default.nix](../deploying/host-files.md).
 
 ## Add a user
 
