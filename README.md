@@ -2,7 +2,7 @@
 
 # nixops
 
-Your servers, as code -- reproducible, rollback-safe, and rebuildable by anyone on your team.
+_Your servers, as code. Reproducible, rollback-safe, rebuildable by any teammate._
 
 [![CI](https://github.com/reflection-dev/nixops/actions/workflows/ci.yml/badge.svg)](https://github.com/reflection-dev/nixops/actions/workflows/ci.yml)
 [![Nix flake](https://img.shields.io/badge/Nix-flake-5277C3?logo=nixos&logoColor=white)](https://nixos.org)
@@ -12,13 +12,13 @@ Your servers, as code -- reproducible, rollback-safe, and rebuildable by anyone 
 
 </div>
 
-This is a starter kit for treating a set of Linux servers as code -- so any
-teammate can rebuild your infrastructure from a fresh laptop, install a new
-server with one command, and roll back a bad update automatically.
+A starter kit for treating a set of Linux servers as code: any teammate can
+rebuild your infrastructure from a fresh laptop, install a new server with
+one command, and roll back a bad update automatically.
 
-Never touched NixOS? The [14-chapter zero-to-fleet tutorial](docs/overview/index.md)
-starts from "what even is this" and ends with you running a real fleet -- no
-prior functional-programming or DevOps background required.
+> **New to NixOS?** The [zero-to-fleet tutorial](docs/overview/index.md) starts
+> from "what even is this" and ends with you running a real fleet -- no prior
+> functional-programming or DevOps background required.
 
 ## Contents
 
@@ -183,15 +183,13 @@ sane cases). Any host can opt out of any individual piece.
 
 ## New to Nix?
 
-There is a full zero-to-fleet tutorial in [`docs/`](docs/overview/index.md).
-Fourteen chapters, written for ops folks who have never touched Nix, NixOS,
-or flakes -- covering the language, the module system, `sops-nix`,
-`nixos-anywhere`, and `deploy-rs`, ending with a walkthrough of installing
-and operating a real fleet with this repo. Every chapter links to the
-canonical Nix docs (nix.dev, NixOS Manual, Zero to Nix, NixOS Wiki,
-Discourse) for deeper dives.
-
-Start with [docs/overview/index.md](docs/overview/index.md).
+The [zero-to-fleet tutorial](docs/overview/index.md) under [`docs/`](docs/)
+is written for ops folks who have never touched Nix, NixOS, or flakes. It
+covers the language, the module system, `sops-nix`, `nixos-anywhere`, and
+`deploy-rs`, ending with a walkthrough of installing and operating a real
+fleet with this repo. Every chapter links to the canonical Nix docs
+(nix.dev, NixOS Manual, Zero to Nix, NixOS Wiki, Discourse) for deeper
+dives.
 
 ## Non-goals
 
