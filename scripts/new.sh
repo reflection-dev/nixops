@@ -19,8 +19,13 @@ if [ -z "$NAME" ]; then
 fi
 
 if [ -e "$NAME" ]; then
-  if [ -d "$NAME" ] && [ -z "$(ls -A "$NAME" 2>/dev/null)" ]; then
-    : # empty directory -- populate in place
+  # Allow populating in place when the directory is empty, or when the
+  # only leftover is `.direnv/` from a prior scaffold. Preserving that
+  # cache lets `direnv exec . true` finish instantly on the re-scaffold
+  # (useful for repeated demo / test runs; harmless for real use).
+  leftovers=$(ls -A "$NAME" 2>/dev/null | grep -Fxv .direnv || true)
+  if [ -d "$NAME" ] && [ -z "$leftovers" ]; then
+    : # empty (or only .direnv from a prior run) -- populate in place
   else
     gum log --level error "'$NAME' already exists and is not an empty directory"
     exit 1
