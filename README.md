@@ -4,9 +4,9 @@
 
 _Your servers, as code. Reproducible, rollback-safe, rebuildable by any teammate._
 
-[![CI](https://github.com/reflection-dev/nixops/actions/workflows/ci.yml/badge.svg)](https://github.com/reflection-dev/nixops/actions/workflows/ci.yml)
-[![Nix flake](https://img.shields.io/badge/Nix-flake-5277C3?logo=nixos&logoColor=white)](https://nixos.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-7aa2f7)](LICENSE)
+<a href="https://github.com/reflection-dev/nixops/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/reflection-dev/nixops/actions/workflows/ci.yml/badge.svg"></a>
+<a href="https://nixos.org"><img alt="Nix flake" src="https://img.shields.io/badge/Nix-flake-5277C3?logo=nixos&amp;logoColor=white"></a>
+<a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-7aa2f7"></a>
 
 <!-- HERO_GIF: recorded terminal demo lands in the next commit (see docs/operating/opsvm.md) -->
 
