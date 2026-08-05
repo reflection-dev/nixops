@@ -1,4 +1,19 @@
+# Nix build outputs
 result
 result-*
+
+# direnv / nix-direnv
 .direnv/
+.envrc.local
+
+# opsvm state (only if launched from inside a checkout; the real state dir
+# lives under $XDG_STATE_HOME/nixops-opsvm/<name>/)
 opsvm.qcow2
+opsvm-*.qcow2
+
+# Editor / OS scratch
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store

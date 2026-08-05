@@ -1,0 +1,88 @@
+name: Bug report
+description: Something in nixops does not work as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug. Please fill in the details
+        below so the issue is actionable without a follow-up round-trip.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: A clear, factual description of the observed behavior.
+      placeholder: |
+        `nix run .#opsvm -- demo` exits with code 1 immediately after
+        "Booting NixOS VM ..." with no visible error.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: The behavior you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: The exact commands (from a clean checkout, if possible) that trigger it.
+      render: shell
+      placeholder: |
+        git clone https://github.com/reflection-dev/nixops
+        cd nixops
+        nix run .#opsvm -- demo
+    validations:
+      required: true
+
+  - type: input
+    id: nixops-rev
+    attributes:
+      label: nixops revision
+      description: Commit SHA or flake input revision you were on.
+      placeholder: e.g. c5b4e18
+    validations:
+      required: true
+
+  - type: input
+    id: nix-version
+    attributes:
+      label: Nix version
+      description: Output of `nix --version`.
+      placeholder: nix (Nix) 2.24.0
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Host OS / arch
+      description: e.g. NixOS 24.11 on x86_64-linux, macOS 15.1 on aarch64-darwin.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs / trace
+      description: Full output with `--show-trace` if it is a Nix eval error.
+      render: shell
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I checked the [tutorial](../docs/overview/index.md) and existing issues.
+          required: true
+        - label: This is not a question about Nix/NixOS in general (those belong on [Discourse](https://discourse.nixos.org/)).
+          required: true
+        - label: This report contains no private key material, cleartext secrets, or personal identifiers.
+          required: true

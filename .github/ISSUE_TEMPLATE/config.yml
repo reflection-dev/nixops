@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/reflection-dev/nixops/security/advisories/new
+    about: Please report security issues privately, not in a public issue. See SECURITY.md.
+  - name: Nix / NixOS help
+    url: https://discourse.nixos.org/
+    about: Questions about Nix, NixOS, sops-nix, deploy-rs, or nixos-anywhere in general belong on Discourse.

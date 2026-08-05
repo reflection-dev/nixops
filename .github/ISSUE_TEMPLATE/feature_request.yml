@@ -1,0 +1,48 @@
+name: Feature request
+description: Propose a new module, script, or behavior for nixops.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion. Before filing, please check that the
+        request is in scope: `nixops` is a **generic** fleet base -- AI /
+        agent-specific tooling lives in the sibling
+        [castle](https://github.com/reflection-dev/castle) repo, and
+        hardware/disko recipes live in the instance repos themselves. See
+        the "Non-goals" section of the README.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: The concrete operational pain the feature would relieve.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: What should nixops expose, and where -- a new module toggle,
+        a new devShell command, a new flake output, ...?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What have you tried in the current repo, or in other tooling?
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Scope
+      options:
+        - label: This is generic fleet plumbing, not AI-specific tooling (which belongs in [castle](https://github.com/reflection-dev/castle)).
+          required: true
+        - label: This is not a per-fleet hardware/disko concern (those live in instance repos).
+          required: true

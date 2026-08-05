@@ -1,22 +1,60 @@
+<div align="center">
+
 # nixops
 
-Generic NixOS fleet base -- inventory-driven modules, `deploy-rs` and
-`sops-nix` wiring, `nixos-anywhere` bootstrap, and an ops devShell with
-per-inventory ssh aliases + interactive wizards.
+Generic NixOS fleet base -- inventory-driven modules, sops-nix, deploy-rs and nixos-anywhere in one flake.
 
-## New to Nix?
+[![CI](https://github.com/reflection-dev/nixops/actions/workflows/ci.yml/badge.svg)](https://github.com/reflection-dev/nixops/actions/workflows/ci.yml)
+[![Nix flake](https://img.shields.io/badge/Nix-flake-5277C3?logo=nixos&logoColor=white)](https://nixos.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-7aa2f7)](LICENSE)
 
-There is a full zero-to-fleet tutorial in [`docs/`](docs/00-index.md).
-Fourteen chapters, written for ops folks who have never touched Nix,
-NixOS, or flakes -- covering the language, the module system,
-`sops-nix`, `nixos-anywhere`, and `deploy-rs`, ending with a walkthrough
-of installing and operating a real fleet with this repo. Every chapter
-links to the canonical Nix docs (nix.dev, NixOS Manual, Zero to Nix,
-NixOS Wiki, Discourse) for deeper dives.
+<!-- HERO_GIF: recorded terminal demo lands in the next commit (see docs/operating/opsvm.md) -->
 
-Start with [docs/00-index.md](docs/00-index.md).
+</div>
+
+`nixops` is the reusable base every fleet at [reflection-dev](https://github.com/reflection-dev)
+grows from. It packages the pieces of a small ops team's setup that are
+otherwise re-invented per project -- an inventory-driven module set,
+sops-nix wiring, one-command remote installs with `nixos-anywhere`, and a
+`deploy-rs` devShell with per-host ssh aliases and gum-driven wizards -- as
+a single flake that other repos consume as an input.
+
+If you have never touched Nix before, jump to the
+[zero-to-fleet tutorial](docs/overview/index.md); if you already know Nix,
+[Quick start](#quick-start) is enough.
+
+## Contents
+
+- [What you get](#what-you-get)
+- [Quick start](#quick-start)
+- [Ephemeral operator VM](#ephemeral-operator-vm)
+- [Instance repo layout](#instance-repo-layout)
+- [devShell commands](#devshell-commands)
+- [Flake outputs](#flake-outputs)
+- [Base modules](#base-modules)
+- [Bootstrap flow](#bootstrap-flow)
+- [New to Nix?](#new-to-nix)
+- [Non-goals](#non-goals)
+- [Contributing](#contributing)
+- [License](#license)
+
+## What you get
+
+| Piece                | What it does                                                                     |
+| -------------------- | -------------------------------------------------------------------------------- |
+| Instance scaffold    | `nix run` wizard produces a five-file fleet repo, ready to add hosts.            |
+| Base NixOS modules   | Hardened sshd, sops-nix, users, firewall, sane Nix defaults -- all toggle-driven. |
+| Remote install       | `install-host` = `nixos-anywhere` + sops recipient inject + secret prompts.       |
+| Deploy               | `deploy-rs` wrapper for whole fleet or single host, with rollback.                |
+| Ephemeral operator VM | `nix run .#opsvm` -- a throwaway NixOS workstation with the full toolchain.      |
+
+The split is deliberate: `nixops` is **generic**. AI-specific tooling lives on
+top in [castle](https://github.com/reflection-dev/castle); hardware/disko and
+per-fleet services stay in the instance repos.
 
 ## Quick start
+
+Requires [Nix](https://nixos.org/download.html) with flakes enabled.
 
 ```
 nix run github:reflection-dev/nixops -- new my-fleet
@@ -29,8 +67,7 @@ The wizard prompts for description, SSH keys (auto-detected from
 `~/.config/sops/age/keys.txt`), optionally `git init`s the repo, and
 optionally scaffolds a first host through `add-host`.
 
-Bare-bones alternative for those who prefer to edit placeholders by
-hand:
+Bare-bones alternative for those who prefer to edit placeholders by hand:
 
 ```
 nix flake init -t github:reflection-dev/nixops
@@ -38,9 +75,9 @@ nix flake init -t github:reflection-dev/nixops
 
 ## Ephemeral operator VM
 
-For dry-runs, demos, or driving a fleet from a machine you do not
-want to mix with your real `~/.ssh` / `~/.config/sops/age`, boot a
-throwaway NixOS workstation:
+For dry-runs, demos, or driving a fleet from a machine you do not want to mix
+with your real `~/.ssh` / `~/.config/sops/age`, boot a throwaway NixOS
+workstation:
 
 ```
 nix run github:reflection-dev/nixops#opsvm
@@ -85,9 +122,9 @@ my-fleet/
 `-- README.md
 ```
 
-Shared SSH keys live inline in `flake.nix` (one list, every host).
-Per-host NixOS modules live under `hosts/<name>/` and are pulled in
-via the `modules = [ ./hosts/<name> ];` field on the inventory entry.
+Shared SSH keys live inline in `flake.nix` (one list, every host). Per-host
+NixOS modules live under `hosts/<name>/` and are pulled in via the
+`modules = [ ./hosts/<name> ];` field on the inventory entry.
 
 ## devShell commands
 
@@ -101,9 +138,8 @@ via the `modules = [ ./hosts/<name> ];` field on the inventory entry.
 | `update-secrets [name]` | interactively fill any `sops.secrets.*` not yet set                    |
 | `deploy [name]`         | `deploy-rs` wrapper: all nodes, or one by name                         |
 
-Plus in `PATH`: `sops`, `age`, `ssh-to-age`, `deploy-rs`,
-`nixos-anywhere`, `jq`, `gum`. All interactive prompts use `gum` -- no
-plain `read` UX.
+Plus in `PATH`: `sops`, `age`, `ssh-to-age`, `deploy-rs`, `nixos-anywhere`,
+`jq`, `gum`. All interactive prompts use `gum` -- no plain `read` UX.
 
 ## Flake outputs
 
@@ -122,22 +158,21 @@ nixops.apps.<system>.opsvm           # ephemeral workstation launcher
 
 ## Base modules
 
-Every module is toggle-driven (`nixops.<name>.enable`, default true for
-the sane cases). Any host can opt out of any individual piece.
+Every module is toggle-driven (`nixops.<name>.enable`, default true for the
+sane cases). Any host can opt out of any individual piece.
 
-| module         | purpose                                                                        |
-| -------------- | ------------------------------------------------------------------------------ |
+| module         | purpose                                                                                       |
+| -------------- | --------------------------------------------------------------------------------------------- |
 | `nix-defaults` | flakes, weekly GC (30d retention), UTC, UTF-8 locale, `system.stateVersion`, base CLI toolbox |
-| `ssh`          | hardened sshd; root allowed by key only, no passwords, no keyboard-interactive |
-| `sops`         | `sops.age.sshKeyPaths = [ /etc/ssh/ssh_host_ed25519_key ]`                     |
-| `users`        | seeds root's authorized_keys from the shared `sshKeys` list                    |
-| `firewall`     | allowlist mode; extra ports via `nixops.firewall.allowedTCP/UDPPorts`          |
+| `ssh`          | hardened sshd; root allowed by key only, no passwords, no keyboard-interactive                |
+| `sops`         | `sops.age.sshKeyPaths = [ /etc/ssh/ssh_host_ed25519_key ]`                                    |
+| `users`        | seeds root's authorized_keys from the shared `sshKeys` list                                   |
+| `firewall`     | allowlist mode; extra ports via `nixops.firewall.allowedTCP/UDPPorts`                         |
 
 ## Bootstrap flow
 
 1. Have an age key at `~/.config/sops/age/keys.txt` (or let the wizard
-   generate one) -- its recipient goes into `.sops.yaml` as
-   `&admin_<name>`.
+   generate one) -- its recipient goes into `.sops.yaml` as `&admin_<name>`.
 2. `add-host <name>` scaffolds a host entry.
 3. `install-host <name>` runs `nixos-anywhere`:
    - generates the target's `ssh_host_ed25519_key` locally,
@@ -147,20 +182,41 @@ the sane cases). Any host can opt out of any individual piece.
    - prompts for any missing `sops.secrets.*`,
    - kexecs NixOS with the host key as `--extra-files`,
    - removes the local copy of the private key on success.
-4. Subsequent updates: `deploy <name>` (or `deploy` for the whole
-   fleet).
+4. Subsequent updates: `deploy <name>` (or `deploy` for the whole fleet).
+
+## New to Nix?
+
+There is a full zero-to-fleet tutorial in [`docs/`](docs/overview/index.md).
+Fourteen chapters, written for ops folks who have never touched Nix, NixOS,
+or flakes -- covering the language, the module system, `sops-nix`,
+`nixos-anywhere`, and `deploy-rs`, ending with a walkthrough of installing
+and operating a real fleet with this repo. Every chapter links to the
+canonical Nix docs (nix.dev, NixOS Manual, Zero to Nix, NixOS Wiki,
+Discourse) for deeper dives.
+
+Start with [docs/overview/index.md](docs/overview/index.md).
 
 ## Non-goals
 
-- **AI-specific tooling** (agents, coding assistants, model hosts) --
-  that layer lives in [reflection-dev/castle](https://github.com/reflection-dev/castle),
+- **AI-specific tooling** (agents, coding assistants, model hosts) -- that
+  layer lives in [reflection-dev/castle](https://github.com/reflection-dev/castle),
   which will build on top of `nixops`.
-- **Hardware/disko recipes**. Every fleet's storage story is
-  different; nixops does not ship parameterised disk layouts. Instances
-  drop their own `hosts/<name>/disko.nix` next to
-  `hardware-configuration.nix`.
+- **Hardware/disko recipes.** Every fleet's storage story is different;
+  `nixops` does not ship parameterised disk layouts. Instances drop their
+  own `hosts/<name>/disko.nix` next to `hardware-configuration.nix`.
 - **Managed service modules** (Postgres, Redis, ...). Add these in the
   instance or in a purpose-specific library on top.
-- **Multi-cloud abstractions**. `install-host` works over any SSH
-  target reachable by `nixos-anywhere`; provider-specific modules can
-  land later as opt-in extras.
+- **Multi-cloud abstractions.** `install-host` works over any SSH target
+  reachable by `nixos-anywhere`; provider-specific modules can land later
+  as opt-in extras.
+
+## Contributing
+
+Issues and PRs welcome -- see [CONTRIBUTING.md](CONTRIBUTING.md) for the
+development setup, the module/script conventions, and the PR checklist.
+Be kind ([Code of Conduct](CODE_OF_CONDUCT.md)); report vulnerabilities
+privately per [SECURITY.md](SECURITY.md).
+
+## License
+
+[MIT](LICENSE) (c) 2026 Andy Smith.
