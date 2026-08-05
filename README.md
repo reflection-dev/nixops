@@ -2,7 +2,7 @@
 
 # nixops
 
-Generic NixOS fleet base -- inventory-driven modules, sops-nix, deploy-rs and nixos-anywhere in one flake.
+Your servers, as code -- reproducible, rollback-safe, and rebuildable by anyone on your team.
 
 [![CI](https://github.com/reflection-dev/nixops/actions/workflows/ci.yml/badge.svg)](https://github.com/reflection-dev/nixops/actions/workflows/ci.yml)
 [![Nix flake](https://img.shields.io/badge/Nix-flake-5277C3?logo=nixos&logoColor=white)](https://nixos.org)
@@ -12,16 +12,13 @@ Generic NixOS fleet base -- inventory-driven modules, sops-nix, deploy-rs and ni
 
 </div>
 
-`nixops` is the reusable base every fleet at [reflection-dev](https://github.com/reflection-dev)
-grows from. It packages the pieces of a small ops team's setup that are
-otherwise re-invented per project -- an inventory-driven module set,
-sops-nix wiring, one-command remote installs with `nixos-anywhere`, and a
-`deploy-rs` devShell with per-host ssh aliases and gum-driven wizards -- as
-a single flake that other repos consume as an input.
+This is a starter kit for treating a set of Linux servers as code -- so any
+teammate can rebuild your infrastructure from a fresh laptop, install a new
+server with one command, and roll back a bad update automatically.
 
-If you have never touched Nix before, jump to the
-[zero-to-fleet tutorial](docs/overview/index.md); if you already know Nix,
-[Quick start](#quick-start) is enough.
+Never touched NixOS? The [14-chapter zero-to-fleet tutorial](docs/overview/index.md)
+starts from "what even is this" and ends with you running a real fleet -- no
+prior functional-programming or DevOps background required.
 
 ## Contents
 
