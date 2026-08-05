@@ -139,7 +139,19 @@
                   # dfltuid/dfltgid map an empty mapped-xattr mount root to the
                   # ops user (uid 1000, primary group `users` gid 100), so no
                   # post-mount chown is needed.
-                  fileSystems."/home/ops/.ssh" = {
+                  #
+                  # These MUST use virtualisation.fileSystems (not the plain
+                  # fileSystems). qemu-vm.nix overrides `fileSystems` with
+                  # `mkVMOverride cfg.fileSystems` at line 1413, so any plain
+                  # `fileSystems.*` declaration here is silently dropped --
+                  # the mount unit is never generated and nothing shares back
+                  # to the host state dir.
+                  #
+                  # x-systemd.requires=modprobe@9pnet_virtio.service pulls the
+                  # 9p transport module on demand; without it the mount would
+                  # race against module load (same option the nix-store 9p
+                  # mount uses).
+                  virtualisation.fileSystems."/home/ops/.ssh" = {
                     device = "opsssh";
                     fsType = "9p";
                     options = [
@@ -150,10 +162,11 @@
                       "msize=104857600"
                       "dfltuid=1000"
                       "dfltgid=100"
+                      "x-systemd.requires=modprobe@9pnet_virtio.service"
                     ];
                     neededForBoot = false;
                   };
-                  fileSystems."/home/ops/.config/sops/age" = {
+                  virtualisation.fileSystems."/home/ops/.config/sops/age" = {
                     device = "opsage";
                     fsType = "9p";
                     options = [
@@ -164,10 +177,11 @@
                       "msize=104857600"
                       "dfltuid=1000"
                       "dfltgid=100"
+                      "x-systemd.requires=modprobe@9pnet_virtio.service"
                     ];
                     neededForBoot = false;
                   };
-                  fileSystems."/home/ops/workdir" = {
+                  virtualisation.fileSystems."/home/ops/workdir" = {
                     device = "opsworkdir";
                     fsType = "9p";
                     options = [
@@ -178,6 +192,7 @@
                       "msize=104857600"
                       "dfltuid=1000"
                       "dfltgid=100"
+                      "x-systemd.requires=modprobe@9pnet_virtio.service"
                     ];
                     neededForBoot = false;
                   };
