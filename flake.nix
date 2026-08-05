@@ -20,13 +20,18 @@
     };
   };
 
-  outputs = { self, nixpkgs, sops-nix, deploy-rs, ... }: {
+  outputs = { self, nixpkgs, sops-nix, deploy-rs, ... }: let
+    systems = [ "x86_64-linux" "aarch64-linux" ];
+    forEachSystem = nixpkgs.lib.genAttrs systems;
+  in {
     nixosModules.default = {
       imports = [
         sops-nix.nixosModules.sops
         ./modules
       ];
     };
+
+    nixosModules.opsWorkstation = ./modules/ops-workstation.nix;
 
     lib = {
       mkNixosConfigs = import ./lib/mkNixosConfigs.nix { inherit nixpkgs sops-nix self; };
@@ -39,7 +44,30 @@
       description = "nixops instance -- new fleet scaffold";
     };
 
-    apps = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system:
+    packages = forEachSystem (system: {
+      opsvm = (nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules = [
+          self.nixosModules.opsWorkstation
+          ({ modulesPath, ... }: {
+            imports = [ "${modulesPath}/virtualisation/qemu-vm.nix" ];
+            networking.hostName = "opsvm";
+            system.stateVersion = "25.05";
+            virtualisation = {
+              memorySize = 4096;
+              cores = 4;
+              diskSize = 20000;
+              graphics = false;
+              forwardPorts = [
+                { from = "host"; host.port = 2222; guest.port = 22; }
+              ];
+            };
+          })
+        ];
+      }).config.system.build.vm;
+    });
+
+    apps = forEachSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
         newCmd = pkgs.writeShellApplication {
@@ -53,9 +81,14 @@
           '' + builtins.readFile ./scripts/new.sh;
         };
         newApp = { type = "app"; program = "${newCmd.out}/bin/new"; };
+        opsvmApp = {
+          type = "app";
+          program = "${self.packages.${system}.opsvm}/bin/run-opsvm-vm";
+        };
       in {
         new = newApp;
         default = newApp;
+        opsvm = opsvmApp;
       });
   };
 }
