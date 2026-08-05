@@ -1,7 +1,7 @@
 ---
 time: "30 minutes"
 ---
-# 04 -- Flakes
+# Flakes
 
 > **Prerequisite:** [The Nix language](nix-language.md).
 >

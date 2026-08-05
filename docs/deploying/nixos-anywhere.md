@@ -1,7 +1,7 @@
 ---
 time: "30 minutes"
 ---
-# 07 -- Remote install with nixos-anywhere
+# Remote install with nixos-anywhere
 
 > **Prerequisite:** [Secrets with sops-nix](sops-nix.md).
 >

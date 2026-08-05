@@ -68,6 +68,7 @@ someone else set up.
 
 | Chapter | Purpose |
 | ------- | ------- |
+| [Operating from an ephemeral workstation VM](../operating/opsvm.md) | One-command NixOS workstation with the full toolchain |
 | [Day-two operations](../operating/day-two-operations.md) | The routine ops loop |
 | [Writing host-specific modules](../operating/writing-host-modules.md) | Adding services, disks, firewall holes |
 | [Troubleshooting](../operating/troubleshooting.md) | Failure modes and how to diagnose |
@@ -94,4 +95,4 @@ site, maintained by the NixOS Foundation. Every time this tutorial
 sends you elsewhere, it is usually there. Bookmark it before starting
 [What Nix is and why it matters](../foundations/what-is-nix.md).
 
-Ready? [Start with [What Nix is and why it matters](../foundations/what-is-nix.md).](../foundations/what-is-nix.md)
+Ready? [Start with **What Nix is and why it matters**.](../foundations/what-is-nix.md)

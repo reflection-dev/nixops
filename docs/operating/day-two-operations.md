@@ -1,7 +1,7 @@
 ---
 time: "30 minutes for the reading; the rest is muscle memory"
 ---
-# 11 -- Day-two operations
+# Day-two operations
 
 > **Prerequisite:** [Anatomy of an instance repo](../deploying/anatomy-of-an-instance.md).
 >

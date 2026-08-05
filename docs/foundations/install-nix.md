@@ -1,7 +1,7 @@
 ---
 time: "15 minutes"
 ---
-# 02 -- Install Nix and enable flakes
+# Install Nix and enable flakes
 
 > **Prerequisite:** [What Nix is and why it matters](what-is-nix.md).
 >

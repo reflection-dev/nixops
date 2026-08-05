@@ -1,7 +1,7 @@
 ---
 time: "30 minutes"
 ---
-# 08 -- Deploying with deploy-rs
+# Deploying with deploy-rs
 
 > **Prerequisite:** [Remote install with nixos-anywhere](nixos-anywhere.md).
 >

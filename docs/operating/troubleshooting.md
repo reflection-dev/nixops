@@ -1,7 +1,7 @@
 ---
 time: "read once now; grep back when stuck"
 ---
-# 13 -- Troubleshooting
+# Troubleshooting
 
 > **Prerequisite:** [Writing host-specific modules](writing-host-modules.md).
 >

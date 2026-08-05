@@ -1,7 +1,7 @@
 ---
 time: "45 minutes"
 ---
-# 05 -- NixOS and the module system
+# NixOS and the module system
 
 > **Prerequisite:** [Flakes](flakes.md).
 >

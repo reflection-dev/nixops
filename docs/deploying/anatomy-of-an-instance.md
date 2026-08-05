@@ -1,7 +1,7 @@
 ---
 time: "30 minutes"
 ---
-# 10 -- Anatomy of an instance repo
+# Anatomy of an instance repo
 
 > **Prerequisite:** [Your first fleet](your-first-fleet.md) (you have a scaffolded fleet repo).
 >

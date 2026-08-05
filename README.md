@@ -36,6 +36,42 @@ hand:
 nix flake init -t github:reflection-dev/nixops
 ```
 
+## Ephemeral operator VM
+
+For dry-runs, demos, or driving a fleet from a machine you do not
+want to mix with your real `~/.ssh` / `~/.config/sops/age`, boot a
+throwaway NixOS workstation:
+
+```
+nix run github:reflection-dev/nixops#opsvm
+```
+
+Optional name (becomes the guest hostname and the state-dir slug):
+
+```
+nix run github:reflection-dev/nixops#opsvm -- my-fleet
+# equivalently: OPSVM_NAME=my-fleet nix run github:reflection-dev/nixops#opsvm
+```
+
+State lives on the host under `${XDG_STATE_HOME:-~/.local/state}/nixops-opsvm/<name>/`:
+
+```
+<state>/
+|-- opsvm.qcow2   persistent VM disk (rm to reset)
+|-- ssh/          mounted into guest at /home/ops/.ssh
+`-- sops-age/     mounted into guest at /home/ops/.config/sops/age
+```
+
+Notes:
+
+- QEMU is bundled through Nix; the host only needs `/dev/kvm`.
+- Serial console autologins as `ops` (unprivileged, passwordless sudo).
+  Exit QEMU with `Ctrl+A`, then `x`.
+- Different names get separate state dirs and disks -- juggle several
+  isolated workstations from one command.
+- No inbound sshd; the VM initiates outbound ssh only (`nixos-anywhere`,
+  `install-host`, ...).
+
 ## Instance repo layout
 
 Five files -- everything else grows as hosts are added.
@@ -74,11 +110,14 @@ plain `read` UX.
 ```
 nixops.nixosModules.default          # aggregator: sops-nix + all base modules
 nixops.nixosModules.{ssh, sops, users, nix-defaults, firewall}
+nixops.nixosModules.opsWorkstation   # ops user + toolchain (opt-in, workstation role)
 nixops.lib.mkNixosConfigs { hosts; sshKeys; }
 nixops.lib.mkDeploy nixosConfigurations
 nixops.lib.mkDevShell { hosts; system; extraPackages? }
 nixops.templates.default             # for `nix flake init -t`
+nixops.packages.<system>.opsvm       # nixos-vm: opsWorkstation + qemu-vm.nix
 nixops.apps.<system>.{new, default}  # the wizard
+nixops.apps.<system>.opsvm           # ephemeral workstation launcher
 ```
 
 ## Base modules

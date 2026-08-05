@@ -1,7 +1,7 @@
 ---
 time: "45 minutes -- longer if you follow along in `nix repl`"
 ---
-# 03 -- The Nix language
+# The Nix language
 
 > **Prerequisite:** [Install Nix and enable flakes](install-nix.md) (you have a working `nix` command).
 >

@@ -1,7 +1,7 @@
 ---
 time: "40 minutes"
 ---
-# 06 -- Secrets with sops-nix
+# Secrets with sops-nix
 
 > **Prerequisite:** [NixOS and the module system](../foundations/nixos-and-modules.md).
 >

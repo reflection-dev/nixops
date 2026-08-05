@@ -1,7 +1,7 @@
 ---
 time: "45 minutes"
 ---
-# 12 -- Writing host-specific modules
+# Writing host-specific modules
 
 > **Prerequisite:** [Day-two operations](day-two-operations.md).
 >

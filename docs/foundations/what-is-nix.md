@@ -1,7 +1,7 @@
 ---
 time: "20 minutes of reading"
 ---
-# 01 -- What Nix is and why it matters
+# What Nix is and why it matters
 
 > **Prerequisite:** none.
 >

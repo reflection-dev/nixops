@@ -1,7 +1,7 @@
 ---
 time: "30-60 minutes of walltime; ~15 minutes of hands-on typing"
 ---
-# 09 -- Your first fleet
+# Your first fleet
 
 > **Prerequisite:** [What Nix is and why it matters](../overview/index.md). Also a Linux target you can wipe (a $5 VPS with root SSH access is ideal).
 >

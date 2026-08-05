@@ -1,4 +1,4 @@
-# 14 -- Further reading
+# Further reading
 
 > **Prerequisite:** [Troubleshooting](troubleshooting.md), or just an appetite.
 >
