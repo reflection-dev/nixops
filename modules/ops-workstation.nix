@@ -101,8 +101,9 @@ in {
 
       ~/.ssh and ~/.config/sops/age are mounted from the host state dir
       (opsvm-launch prints its path on start; default
-      ~/.local/state/nixops-opsvm/ on the host). Anything you put there
-      survives poweroff and VM rebuilds.
+      ~/.local/state/nixops-opsvm/<name>/ on the host, where <name>
+      comes from OPSVM_NAME). Anything you put there survives poweroff
+      and VM rebuilds.
 
         1. Generate an ssh key for this operator identity:
              ssh-keygen -t ed25519 -C opsvm -f ~/.ssh/id_ed25519 -N ""

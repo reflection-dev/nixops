@@ -49,8 +49,11 @@
         inherit system;
         modules = [
           self.nixosModules.opsWorkstation
-          ({ modulesPath, ... }: {
+          ({ modulesPath, pkgs, ... }: {
             imports = [ "${modulesPath}/virtualisation/qemu-vm.nix" ];
+            # Fallback hostname; the real one comes from the launcher's
+            # -fw_cfg name=opt/opsvm/hostname,string=<name> and gets
+            # applied by opsvm-hostname.service before getty.
             networking.hostName = "opsvm";
             system.stateVersion = "25.05";
             virtualisation = {
@@ -61,6 +64,28 @@
               forwardPorts = [
                 { from = "host"; host.port = 2222; guest.port = 22; }
               ];
+            };
+            # qemu_fw_cfg exposes /sys/firmware/qemu_fw_cfg/by_name/... so
+            # the wrapper can push the requested hostname without a mount.
+            boot.kernelModules = [ "qemu_fw_cfg" ];
+            systemd.services.opsvm-hostname = {
+              description = "Apply hostname pushed via QEMU fw_cfg";
+              wantedBy = [ "sysinit.target" ];
+              before = [ "network-pre.target" "systemd-user-sessions.service" "getty.target" ];
+              after = [ "sys-firmware-qemu_fw_cfg.mount" ];
+              unitConfig.ConditionPathExists = "/sys/firmware/qemu_fw_cfg/by_name/opt/opsvm/hostname/raw";
+              serviceConfig = {
+                Type = "oneshot";
+                RemainAfterExit = true;
+              };
+              path = with pkgs; [ coreutils ];
+              script = ''
+                name=$(tr -d '[:space:]' < /sys/firmware/qemu_fw_cfg/by_name/opt/opsvm/hostname/raw)
+                if [ -n "$name" ]; then
+                  echo "$name" > /proc/sys/kernel/hostname
+                  echo "$name" > /etc/hostname
+                fi
+              '';
             };
             # 9p mounts backed by the host state dir (opsvm-launch wraps
             # run-opsvm-vm with matching -virtfs args). nofail so a bare
