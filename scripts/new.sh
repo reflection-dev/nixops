@@ -174,12 +174,19 @@ cd ..
 (cd "$NAME" && git init -q && git add -A && git commit -q -m "chore: scaffold fleet via nixops")
 crumb "git: initialised"
 
+# Pre-approve the shipped .envrc so `cd ${NAME}` immediately loads the
+# devShell without an interactive `direnv allow`. Best-effort: if direnv
+# is missing from PATH we just skip -- the operator can `direnv allow`
+# manually later.
+if command -v direnv >/dev/null 2>&1; then
+  (cd "$NAME" && direnv allow . >/dev/null 2>&1) && crumb "direnv: allowed"
+fi
+
 gum style --border rounded --padding "0 1" --foreground 82 "created ./${NAME}/"
 cat <<EOF
 
 Next:
   cd ${NAME}
-  nix develop
   add-host <name>
   install-host <name>
 EOF

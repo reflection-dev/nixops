@@ -79,6 +79,7 @@
               gnused
               coreutils
               findutils
+              direnv
               nixVersions.latest
             ];
             text = ''
