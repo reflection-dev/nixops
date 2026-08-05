@@ -52,24 +52,24 @@ base="${XDG_STATE_HOME:-$HOME/.local/state}/nixops-opsvm"
 state_dir="$base/$name"
 ssh_dir="$state_dir/ssh"
 age_dir="$state_dir/sops-age"
-fleet_dir="$state_dir/fleet"
+workdir_dir="$state_dir/workdir"
 disk="$state_dir/opsvm.qcow2"
 
-mkdir -p "$ssh_dir" "$age_dir" "$fleet_dir"
-chmod 700 "$state_dir" "$ssh_dir" "$age_dir" "$fleet_dir"
+mkdir -p "$ssh_dir" "$age_dir" "$workdir_dir"
+chmod 700 "$state_dir" "$ssh_dir" "$age_dir" "$workdir_dir"
 
 cat >&2 <<EOF
 opsvm '$name' state -> $state_dir
-  qcow2 : $disk       (survives poweroff; rm to reset the VM)
-  ssh   : $ssh_dir    -> guest /home/ops/.ssh
-  age   : $age_dir    -> guest /home/ops/.config/sops/age
-  fleet : $fleet_dir  -> guest /home/ops/$name  (autoscaffolded)
+  qcow2   : $disk         (survives poweroff; rm to reset the VM)
+  ssh     : $ssh_dir      -> guest /home/ops/.ssh
+  age     : $age_dir      -> guest /home/ops/.config/sops/age
+  workdir : $workdir_dir  -> guest /home/ops/workdir
 
 Different OPSVM_NAME values get separate state dirs and disks; the
 guest hostname mirrors the name.
 EOF
 
 export NIX_DISK_IMAGE="$disk"
-export QEMU_OPTS="${QEMU_OPTS:-} -fw_cfg name=opt/opsvm/hostname,string=$name -virtfs local,path=$ssh_dir,mount_tag=opsssh,security_model=mapped-xattr,writeout=immediate -virtfs local,path=$age_dir,mount_tag=opsage,security_model=mapped-xattr,writeout=immediate -virtfs local,path=$fleet_dir,mount_tag=opsfleet,security_model=mapped-xattr,writeout=immediate"
+export QEMU_OPTS="${QEMU_OPTS:-} -fw_cfg name=opt/opsvm/hostname,string=$name -virtfs local,path=$ssh_dir,mount_tag=opsssh,security_model=mapped-xattr,writeout=immediate -virtfs local,path=$age_dir,mount_tag=opsage,security_model=mapped-xattr,writeout=immediate -virtfs local,path=$workdir_dir,mount_tag=opsworkdir,security_model=mapped-xattr,writeout=immediate"
 
 exec "$RAW_VM/bin/run-opsvm-vm" "$@"

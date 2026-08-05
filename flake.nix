@@ -127,40 +127,6 @@
                       fi
                     '';
                   };
-                  # Bind-mount /mnt/opsvm-fleet -> /home/ops/<HOSTNAME> at boot,
-                  # so the shared fleet directory appears at ~/<hostname> for
-                  # the ops user (the hostname is only known at runtime, so a
-                  # static fileSystems entry cannot use it directly).
-                  systemd.services.opsvm-fleet-bind = {
-                    description = "Bind-mount opsvm fleet to /home/ops/<hostname>";
-                    wantedBy = [ "multi-user.target" ];
-                    after = [
-                      "mnt-opsvm\\x2dfleet.mount"
-                      "opsvm-hostname.service"
-                    ];
-                    requires = [ "opsvm-hostname.service" ];
-                    serviceConfig = {
-                      Type = "oneshot";
-                      RemainAfterExit = true;
-                    };
-                    path = with pkgs; [
-                      coreutils
-                      util-linux
-                    ];
-                    script = ''
-                      hn=$(cat /proc/sys/kernel/hostname)
-                      if [ -z "$hn" ] || [ "$hn" = "(none)" ]; then
-                        echo "opsvm-fleet-bind: no hostname yet, skipping" >&2
-                        exit 0
-                      fi
-                      target="/home/ops/$hn"
-                      mkdir -p "$target"
-                      chown ops:users "$target"
-                      if ! mountpoint -q "$target"; then
-                        mount --bind /mnt/opsvm-fleet "$target"
-                      fi
-                    '';
-                  };
                   # 9p mounts backed by the host state dir (opsvm-launch wraps
                   # run-opsvm-vm with matching -virtfs args). nofail so a bare
                   # run-opsvm-vm invocation still boots to a login prompt.
@@ -195,8 +161,8 @@
                     ];
                     neededForBoot = false;
                   };
-                  fileSystems."/mnt/opsvm-fleet" = {
-                    device = "opsfleet";
+                  fileSystems."/home/ops/workdir" = {
+                    device = "opsworkdir";
                     fsType = "9p";
                     options = [
                       "trans=virtio"
@@ -215,38 +181,16 @@
                     "d /home/ops/.config       0755 ops users -"
                     "d /home/ops/.config/sops  0755 ops users -"
                   ];
-                  # `new` on PATH so the first-login hook can run it offline;
-                  # git defaults so `new` can `git commit` the scaffold without
-                  # asking the operator for identity first.
+                  # `new` on PATH so the operator can scaffold when they
+                  # want to; no auto-run.
                   environment.systemPackages = [ newCmd ];
-                  programs.git = {
-                    enable = true;
-                    config = {
-                      init.defaultBranch = "main";
-                      user = {
-                        name = "ops";
-                        email = "ops@opsvm";
-                      };
-                    };
-                  };
-                  # First-login: scaffold the fleet at ~/<hostname> if it does
-                  # not exist yet, then cd there. Key generation (ssh + age)
-                  # lives inside `new` so the workflow is identical to running
-                  # `new` on a native workstation. Sourced by every login shell;
-                  # both steps are no-ops after the first time.
+                  # First-login: drop the operator into the shared workdir.
+                  # Nothing else -- fleet scaffolding is up to the user
+                  # (e.g. `new $(hostname)` for a name matching the VM).
                   environment.etc."profile.d/opsvm-firstlogin.sh".text = ''
                     # shellcheck shell=sh
-                    if [ "$(id -un)" = "ops" ]; then
-                      hn=$(hostname)
-                      fleet_dir="$HOME/$hn"
-                      if [ -d "$fleet_dir" ] && [ ! -f "$fleet_dir/flake.nix" ]; then
-                        echo "opsvm: scaffolding fleet '$hn' at $fleet_dir"
-                        (cd "$HOME" && new "$hn")
-                      fi
-                      if [ -d "$fleet_dir" ]; then
-                        cd "$fleet_dir" || true
-                      fi
-                      unset hn fleet_dir
+                    if [ "$(id -un)" = "ops" ] && [ -d "$HOME/workdir" ]; then
+                      cd "$HOME/workdir" || true
                     fi
                   '';
                 })

@@ -114,19 +114,16 @@ in
     environment.etc."motd".text = ''
       nixops operator workstation -- logged in as ${cfg.user}
 
-      ~/.ssh and ~/.config/sops/age are mounted from the host state dir
-      (opsvm-launch prints its path on start; default
-      ~/.local/state/nixops-opsvm/<name>/ on the host, where <name>
-      comes from OPSVM_NAME). Anything you put there survives poweroff
-      and VM rebuilds.
+      ~/.ssh, ~/.config/sops/age and ~/workdir are mounted from the
+      host state dir (opsvm-launch prints its path on start; default
+      ~/.local/state/nixops-opsvm/<name>/). Anything you put in them
+      survives poweroff and VM rebuilds.
 
-        1. Generate an ssh key for this operator identity:
-             ssh-keygen -t ed25519 -C opsvm -f ~/.ssh/id_ed25519 -N ""
-        2. Generate an age key for sops-nix:
-             age-keygen -o ~/.config/sops/age/keys.txt
-        3. Scaffold a fleet and drive it:
-             nix run github:reflection-dev/nixops -- new my-fleet
-             cd my-fleet && nix develop
+      You land in ~/workdir on login. Scaffold a fleet there when you
+      are ready -- name it after this VM so tooling stays consistent:
+
+        new $(hostname)
+        cd $(hostname) && nix develop
              add-host <name>; install-host <name>; deploy <name>
 
       The ssh pubkey (id_ed25519.pub) and age recipient
