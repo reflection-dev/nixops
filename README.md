@@ -12,9 +12,11 @@ _Your servers, as code. Reproducible, rollback-safe, rebuildable by any teammate
 
 </div>
 
-A starter kit for treating a set of Linux servers as code: any teammate can
-rebuild your infrastructure from a fresh laptop, install a new server with
-one command, and roll back a bad update automatically.
+Built on [NixOS](https://nixos.org). It wraps [`nixos-anywhere`](https://github.com/nix-community/nixos-anywhere)
+for one-command remote installs on any SSH-reachable Linux, [`deploy-rs`](https://github.com/serokell/deploy-rs)
+for fleet-wide updates with automatic rollback, and [`sops-nix`](https://github.com/Mic92/sops-nix)
+for secret management that never leaves your laptop -- plus a scaffolding
+wizard and an ephemeral operator VM you can throw away.
 
 > **New to NixOS?** The [zero-to-fleet tutorial](docs/overview/index.md) starts
 > from "what even is this" and ends with you running a real fleet -- no prior
@@ -22,7 +24,6 @@ one command, and roll back a bad update automatically.
 
 ## Contents
 
-- [What you get](#what-you-get)
 - [Quick start](#quick-start)
 - [Ephemeral operator VM](#ephemeral-operator-vm)
 - [Instance repo layout](#instance-repo-layout)
@@ -34,20 +35,6 @@ one command, and roll back a bad update automatically.
 - [Non-goals](#non-goals)
 - [Contributing](#contributing)
 - [License](#license)
-
-## What you get
-
-| Piece                | What it does                                                                     |
-| -------------------- | -------------------------------------------------------------------------------- |
-| Instance scaffold    | `nix run` wizard produces a five-file fleet repo, ready to add hosts.            |
-| Base NixOS modules   | Hardened sshd, sops-nix, users, firewall, sane Nix defaults -- all toggle-driven. |
-| Remote install       | `install-host` = `nixos-anywhere` + sops recipient inject + secret prompts.       |
-| Deploy               | `deploy-rs` wrapper for whole fleet or single host, with rollback.                |
-| Ephemeral operator VM | `nix run .#opsvm` -- a throwaway NixOS workstation with the full toolchain.      |
-
-The split is deliberate: `nixops` is **generic**. AI-specific tooling lives on
-top in [castle](https://github.com/reflection-dev/castle); hardware/disko and
-per-fleet services stay in the instance repos.
 
 ## Quick start
 
