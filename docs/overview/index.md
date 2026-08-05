@@ -1,7 +1,7 @@
 ---
-title: "nixops -- Nix for Ops: a zero-to-fleet tutorial"
+title: "Nix for Ops: a zero-to-fleet tutorial"
 ---
-# nixops -- Nix for Ops: a zero-to-fleet tutorial
+# Nix for Ops: a zero-to-fleet tutorial
 
 This is a guided course for operations engineers who have never touched
 Nix, NixOS, or flakes before, but want to actually run a fleet of NixOS
