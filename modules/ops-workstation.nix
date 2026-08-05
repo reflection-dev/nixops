@@ -8,10 +8,11 @@ in {
       description = ''
         Provision a machine as a nixops operator workstation: an unprivileged
         `ops` user with the toolchain (sops, age, ssh-to-age, gum,
-        nixos-anywhere, deploy-rs) on PATH, flakes and the standard
-        substituters, openssh key-only, passwordless sudo. Independent of
-        the VM shape -- reusable on any host that should double as a
-        control plane for a fleet.
+        nixos-anywhere, deploy-rs, openssh client) on PATH, flakes and
+        the standard substituters, passwordless sudo. No inbound sshd
+        by default -- the workstation initiates outbound ssh only.
+        Independent of the VM shape -- reusable on any host that should
+        double as a control plane for a fleet.
       '';
     };
 
@@ -60,15 +61,6 @@ in {
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       ];
-    };
-
-    services.openssh = {
-      enable = true;
-      settings = {
-        PermitRootLogin = "prohibit-password";
-        PasswordAuthentication = false;
-        KbdInteractiveAuthentication = false;
-      };
     };
 
     users.users.${cfg.user} = {

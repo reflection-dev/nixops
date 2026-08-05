@@ -61,9 +61,6 @@
               cores = 4;
               diskSize = 20000;
               graphics = false;
-              forwardPorts = [
-                { from = "host"; host.port = 2222; guest.port = 22; }
-              ];
             };
             # qemu_fw_cfg exposes /sys/firmware/qemu_fw_cfg/by_name/... so
             # the wrapper can push the requested hostname without a mount.
