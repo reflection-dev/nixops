@@ -3,7 +3,7 @@ time: "45 minutes"
 ---
 # 12 -- Writing host-specific modules
 
-> **Prerequisite:** [Chapter 11](day-two-operations.md).
+> **Prerequisite:** [Day-two operations](day-two-operations.md).
 >
 > **Outcome:** you can add a service to a single host; you can write a disko layout; you can extract a common module across hosts; you can override one of the nixops defaults for a single host.
 
@@ -18,7 +18,7 @@ common piece worth extracting.
 
 Say `web-1` should serve HTTP. In `hosts/web-1/default.nix`:
 
-```
+```nix
 { config, pkgs, ... }: {
   imports = [ ./hardware-configuration.nix ];
 
@@ -46,7 +46,7 @@ Say `web-1` should serve HTTP. In `hosts/web-1/default.nix`:
 
 Deploy:
 
-```
+```console
 $ deploy web-1
 ```
 
@@ -64,7 +64,7 @@ look up `services.nginx` and see the full menu.
 Two hosts both need a `node_exporter` for Prometheus scraping.
 Instead of duplicating in each `hosts/<name>/default.nix`, extract:
 
-```
+```nix
 # roles/node-exporter.nix
 { ... }: {
   services.prometheus.exporters.node = {
@@ -77,7 +77,7 @@ Instead of duplicating in each `hosts/<name>/default.nix`, extract:
 
 Then pull it in from each host:
 
-```
+```nix
 # hosts.nix
 web-1 = { ip = "1.2.3.4"; modules = [ ./hosts/web-1 ../roles/node-exporter.nix ]; };
 db-1  = { ip = "5.6.7.8"; modules = [ ./hosts/db-1  ../roles/node-exporter.nix ]; };
@@ -89,10 +89,10 @@ imports role modules; both work.
 
 ## Override a nixops default for one host
 
-Every base module has an `enable` option (Chapter 5). Turn one off
+Every base module has an `enable` option ([NixOS and the module system](../foundations/nixos-and-modules.md)). Turn one off
 for a specific host:
 
-```
+```nix
 # hosts.nix
 console-1 = {
   ip = "9.9.9.9";
@@ -103,7 +103,7 @@ console-1 = {
 
 Or override an option value:
 
-```
+```nix
 edge-1 = {
   ip = "10.11.12.13";
   modules = [ ./hosts/edge-1 ];
@@ -112,7 +112,7 @@ edge-1 = {
 ```
 
 Remember: the fields on the inventory entry become an inline
-module fragment for that host (Chapter 10). If the change is more
+module fragment for that host ([Anatomy of an instance repo](../deploying/anatomy-of-an-instance.md)). If the change is more
 than a few lines, write it in `hosts/edge-1/default.nix` instead
 and reference it via `modules = [ ./hosts/edge-1 ]`.
 
@@ -124,7 +124,7 @@ nothing. Write your own.
 
 Simplest, for a single-disk VPS:
 
-```
+```nix
 # hosts/web-1/disko.nix
 { ... }: {
   disko.devices.disk.main = {
@@ -158,7 +158,7 @@ Simplest, for a single-disk VPS:
 
 Then in `hosts/web-1/default.nix`:
 
-```
+```nix
 { ... }: {
   imports = [
     ./hardware-configuration.nix
@@ -171,7 +171,7 @@ Then in `hosts/web-1/default.nix`:
 
 If you use disko, add it as a flake input in `flake.nix`:
 
-```
+```nix
 inputs.disko.url = "github:nix-community/disko";
 inputs.disko.inputs.nixpkgs.follows = "nixpkgs";
 ```
@@ -187,7 +187,7 @@ Non-root users are the fleet's own concern (see
 `modules/users.nix` -- only root's `authorized_keys` is managed by
 the base). Add users in a per-host or per-role module:
 
-```
+```nix
 # roles/app-user.nix
 { ... }: {
   users.users.app = {
@@ -202,7 +202,7 @@ the base). Add users in a per-host or per-role module:
 
 For interactive human accounts:
 
-```
+```nix
 users.users.alice = {
   isNormalUser = true;
   extraGroups  = [ "wheel" ];
@@ -215,7 +215,7 @@ users.users.alice = {
 Full pattern: declare the secret, write a service unit that
 consumes it, restart when the secret changes.
 
-```
+```nix
 # hosts/web-1/default.nix
 { config, pkgs, ... }: {
   imports = [ ./hardware-configuration.nix ];
@@ -252,7 +252,7 @@ consumes it, restart when the secret changes.
 
 ## Add a package to a single host
 
-```
+```nix
 # hosts/web-1/default.nix
 { pkgs, ... }: {
   environment.systemPackages = with pkgs; [
@@ -270,7 +270,7 @@ adapter that adds a shared `modules` fragment.
 
 To pin nginx to a specific version, use an overlay:
 
-```
+```nix
 # flake.nix (outputs)
 let
   pkgsOverride = final: prev: {
@@ -291,7 +291,7 @@ is often enough. Overlays get their own manual chapter:
 
 ## Add a scheduled task
 
-```
+```nix
 {
   systemd.timers.backup = {
     wantedBy  = [ "timers.target" ];
@@ -313,7 +313,7 @@ option tree for a preset.
 
 ## Add a Docker or Podman container
 
-```
+```nix
 {
   virtualisation.oci-containers = {
     backend = "podman";
@@ -360,10 +360,10 @@ line is there.
 ## What next
 
 You know how to add anything you would add on a Debian box, but
-now it lives in git and deploys deterministically. Chapter 13 is
+now it lives in git and deploys deterministically. [Troubleshooting](troubleshooting.md) is
 the failure manual for when things do not work.
 
-Next: [Chapter 13 -- Troubleshooting.](troubleshooting.md)
+Next: [Troubleshooting](troubleshooting.md)
 
 ## References for this chapter
 

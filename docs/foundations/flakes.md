@@ -3,7 +3,7 @@ time: "30 minutes"
 ---
 # 04 -- Flakes
 
-> **Prerequisite:** [Chapter 3](nix-language.md).
+> **Prerequisite:** [The Nix language](nix-language.md).
 >
 > **Outcome:** you can read and edit a `flake.nix`; you know how the lock file works; you have used `nix run`, `nix develop`, `nix build`, and `nix flake update`.
 
@@ -30,7 +30,7 @@ NixOS-in-2026 is built on, and every project you will interact with
 
 ## A minimal flake
 
-```
+```nix
 {
   description = "example flake";
 
@@ -81,7 +81,7 @@ tells `X` to use *your* `Y`.
 
 This repo's `flake.nix` uses it:
 
-```
+```nix
 inputs = {
   nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   sops-nix = {
@@ -145,7 +145,7 @@ Full reference: [Nix Reference Manual -- flake outputs](https://nix.dev/manual/n
 
 Open [`flake.nix`](../flake.nix) alongside this section.
 
-```
+```nix
 {
   description = "nixops -- generic NixOS fleet base: inventory-driven modules, deploy tooling, ops devShell";
 
@@ -211,7 +211,7 @@ tutorial:
 Fetch, build, and run an `apps` output. This is how you invoke the
 `new` wizard:
 
-```
+```console
 $ nix run github:reflection-dev/nixops -- new my-fleet
 ```
 
@@ -261,7 +261,7 @@ to read the target's IP out of `hosts.nix`.
 Load a flake into an interactive REPL. Great for poking at what a
 config actually evaluates to:
 
-```
+```console
 $ nix repl .
 nix-repl> :lf .
 nix-repl> nixosConfigurations.web-1.config.networking.hostName
@@ -298,7 +298,7 @@ you already know about Nix expressions and adds the NixOS module
 system on top: how a NixOS configuration is assembled from many
 small modules, each declaring `options` and `config`.
 
-Next: [Chapter 5 -- NixOS and the module system.](nixos-and-modules.md)
+Next: [NixOS and the module system](nixos-and-modules.md)
 
 ## References for this chapter
 

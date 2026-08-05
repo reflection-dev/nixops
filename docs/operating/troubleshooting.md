@@ -3,7 +3,7 @@ time: "read once now; grep back when stuck"
 ---
 # 13 -- Troubleshooting
 
-> **Prerequisite:** [Chapter 12](writing-host-modules.md).
+> **Prerequisite:** [Writing host-specific modules](writing-host-modules.md).
 >
 > **Outcome:** you recognise the common failure modes and know the first two or three things to try before falling back to the community.
 
@@ -16,9 +16,9 @@ almost always has it -- search first, ask second.
 
 ### `error: experimental Nix feature 'nix-command' is disabled`
 
-Flakes are not enabled. Fix `~/.config/nix/nix.conf` per Chapter 2:
+Flakes are not enabled. Fix `~/.config/nix/nix.conf` per [Install Nix and enable flakes](../foundations/install-nix.md):
 
-```
+```ini
 experimental-features = nix-command flakes
 ```
 
@@ -85,7 +85,7 @@ assumes port 22 for the installer.
 
 The safety check in `install-host.sh`. Add `--force`:
 
-```
+```console
 $ install-host web-1 --force
 ```
 
@@ -98,7 +98,7 @@ The `--extra-files` step of `install-host` planted
 its own key on first boot because sshd started before your key was
 in place, or the file permissions ended up wrong. Verify:
 
-```
+```console
 [root@web-1:~]# ls -l /etc/ssh/ssh_host_ed25519_key
 -r-------- 1 root root 411 ... /etc/ssh/ssh_host_ed25519_key
 ```
@@ -135,7 +135,7 @@ of any recipient of that file. Either:
 `sops updatekeys` compares against the file's own recorded MAC.
 Force with `--yes` and re-run:
 
-```
+```console
 $ sops updatekeys --yes secrets/*.yaml
 ```
 
@@ -143,7 +143,7 @@ $ sops updatekeys --yes secrets/*.yaml
 
 ### "cannot resolve host"
 
-deploy-rs SSHes to `nixops.host.ip` (Chapter 8). If your fleet
+deploy-rs SSHes to `nixops.host.ip` ([Deploying with deploy-rs](../deploying/deploy-rs.md)). If your fleet
 lives behind a bastion, add SSH config entries on your workstation
 and swap `hostname` to the alias in your `mkDeploy`, or use
 `ProxyJump` in `~/.ssh/config`.
@@ -244,11 +244,11 @@ schedules this weekly; bump frequency per-host with
 
 ## What next
 
-You have the whole tutorial. Chapter 14 is the curated further-
+You have the whole tutorial. [Further reading](further-reading.md) is the curated further-
 reading list so you can go deeper into whichever piece piqued your
 interest.
 
-Next: [Chapter 14 -- Further reading.](further-reading.md)
+Next: [Further reading](further-reading.md)
 
 ## References for this chapter
 

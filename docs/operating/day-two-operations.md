@@ -3,11 +3,11 @@ time: "30 minutes for the reading; the rest is muscle memory"
 ---
 # 11 -- Day-two operations
 
-> **Prerequisite:** [Chapter 10](../deploying/anatomy-of-an-instance.md).
+> **Prerequisite:** [Anatomy of an instance repo](../deploying/anatomy-of-an-instance.md).
 >
 > **Outcome:** you know every routine ops command by rote; you know what to do when adding a host, adding a secret, adding an admin, or rolling out a config change.
 
-Chapter 9 walked one full loop. This chapter is the reference for
+[Your first fleet](../deploying/your-first-fleet.md) walked one full loop. This chapter is the reference for
 the *repeated* loops: what to run, in what order, when the fleet
 already exists.
 
@@ -31,7 +31,7 @@ Plus (`nix flake update`, `sops`, `age`, `git`) available via
 
 The most common loop.
 
-```
+```console
 $ vim hosts/web-1/default.nix       # or wherever you edit
 $ git status                        # sanity: only expected changes
 $ deploy web-1                      # or `deploy` for the whole fleet
@@ -43,7 +43,7 @@ previous generation and the deploy command exits non-zero.
 
 Commit the change once the deploy succeeds:
 
-```
+```console
 $ git add hosts/web-1/default.nix
 $ git commit -m "web-1: enable metrics endpoint"
 ```
@@ -54,18 +54,18 @@ Only commit what you have proven works.
 
 ## Adding a host
 
-```
+```console
 $ add-host db-1
 IP address: 5.6.7.8
 $ install-host db-1
 ```
 
 `add-host` is inventory-only; `install-host` does the actual
-first-boot install. Chapter 7 covers what `install-host` runs.
+first-boot install. [Remote install with nixos-anywhere](../deploying/nixos-anywhere.md) covers what `install-host` runs.
 
 After it finishes:
 
-```
+```console
 $ ssh db-1
 [root@db-1:~]# nixos-version
 ```
@@ -79,7 +79,7 @@ stub. Commit.
 If a host is in an unrecoverable state, or you want to swap
 hardware:
 
-```
+```console
 $ install-host <name> --force
 ```
 
@@ -97,7 +97,7 @@ Two-step:
 
 1. Declare it in the host's NixOS module.
 
-    ```
+    ```nix
     # hosts/web-1/default.nix
     sops.secrets.api_token = {
       sopsFile = ../../secrets/web-1.yaml;
@@ -110,7 +110,7 @@ Two-step:
 
 2. Fill in the value.
 
-    ```
+    ```console
     $ update-secrets web-1
     web-1 :: api_token
     value for api_token: ****
@@ -122,7 +122,7 @@ Two-step:
 
 Then deploy:
 
-```
+```console
 $ deploy web-1
 ```
 
@@ -135,7 +135,7 @@ would still be on the previous config.
 
 Editing an existing secret in place:
 
-```
+```console
 $ sops secrets/web-1.yaml
 ```
 
@@ -153,7 +153,7 @@ Two edits, one round of `sops updatekeys`.
 
 1. Get the new admin's SSH pubkey; append to `flake.nix`:
 
-    ```
+    ```nix
     sshKeys = [
       "ssh-ed25519 AAAA... you@laptop"
       "ssh-ed25519 AAAA... colleague@laptop"
@@ -164,7 +164,7 @@ Two edits, one round of `sops updatekeys`.
    ~/.config/sops/age/keys.txt` and give you `age1...`); append to
    `.sops.yaml`:
 
-    ```
+    ```yaml
     keys:
       - &admin_you        age1youdefinitely...
       - &admin_colleague  age1theircolleaguekey...
@@ -173,7 +173,7 @@ Two edits, one round of `sops updatekeys`.
 
 3. Add them to every `creation_rule`:
 
-    ```
+    ```yaml
     creation_rules:
       - path_regex: secrets/web-1\.yaml$
         key_groups:
@@ -183,13 +183,13 @@ Two edits, one round of `sops updatekeys`.
 4. Re-encrypt every existing secret file for the new recipient
    set:
 
-    ```
+    ```console
     $ sops updatekeys secrets/*.yaml
     ```
 
 5. Deploy:
 
-    ```
+    ```console
     $ deploy
     ```
 
@@ -213,7 +213,7 @@ Reverse of the above:
 
 ## Reading remote logs and status
 
-```
+```console
 $ ssh web-1
 [root@web-1:~]# journalctl -u nginx --since "1 hour ago"
 [root@web-1:~]# systemctl status
@@ -230,7 +230,7 @@ If magic rollback did not fire (rare -- usually happens when the
 change is bad but does not affect the probe path), roll back from
 your workstation by redeploying an older commit:
 
-```
+```console
 $ git checkout <known-good-commit>
 $ deploy web-1
 $ git checkout main
@@ -242,7 +242,7 @@ version control.
 Only if the host is completely unreachable over SSH (so `deploy`
 cannot connect), console in and roll back on the target itself:
 
-```
+```console
 [root@web-1:~]# nixos-rebuild switch --rollback
 ```
 
@@ -256,7 +256,7 @@ until GC runs; by default `nix-defaults.nix` sets GC to weekly with
 
 If a target starts running out of disk:
 
-```
+```console
 [root@web-1:~]# nix-collect-garbage --delete-older-than 7d
 ```
 
@@ -267,7 +267,7 @@ in `hosts.nix`.
 
 ## Refreshing dependencies
 
-```
+```console
 $ nix flake update
 $ git diff flake.lock            # see which versions bumped
 $ nix flake check                # every deploy still evaluates
@@ -279,7 +279,7 @@ Commit `flake.lock` afterwards.
 Bump just one input (e.g. only `nixops` because you shipped a
 change to it upstream):
 
-```
+```console
 $ nix flake lock --update-input nixops
 ```
 
@@ -288,7 +288,7 @@ $ nix flake lock --update-input nixops
 If some hosts must be updated in a specific order (e.g. deploy the
 DB first, then the app tier):
 
-```
+```console
 $ deploy db-1
 $ deploy app-1 app-2 app-3       # not supported by the wrapper; use plain deploy-rs:
 $ deploy .#app-1 .#app-2 .#app-3
@@ -305,7 +305,7 @@ non-standard port, changing the interface deploy-rs SSHes to,
 enabling a firewall rule that blocks the probe. Those need
 `--no-magic-rollback`:
 
-```
+```console
 $ deploy web-1 -- --no-magic-rollback
 ```
 
@@ -323,12 +323,12 @@ later:
 
 ## What next
 
-You know the routine. Chapter 12 covers writing your own
+You know the routine. [Writing host-specific modules](writing-host-modules.md) covers writing your own
 host-specific modules -- adding a real service, a disk layout,
-overriding one of the nixops defaults for a single host. Chapter 13
+overriding one of the nixops defaults for a single host. [Troubleshooting](troubleshooting.md)
 is the failure-mode manual.
 
-Next: [Chapter 12 -- Writing host-specific modules.](writing-host-modules.md)
+Next: [Writing host-specific modules](writing-host-modules.md)
 
 ## References for this chapter
 

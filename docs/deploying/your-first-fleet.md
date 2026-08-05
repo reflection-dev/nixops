@@ -3,7 +3,7 @@ time: "30-60 minutes of walltime; ~15 minutes of hands-on typing"
 ---
 # 09 -- Your first fleet
 
-> **Prerequisite:** [Chapters 1-8](../overview/index.md). Also a Linux target you can wipe (a $5 VPS with root SSH access is ideal).
+> **Prerequisite:** [What Nix is and why it matters](../overview/index.md). Also a Linux target you can wipe (a $5 VPS with root SSH access is ideal).
 >
 > **Outcome:** a git repo describing your fleet; a real NixOS host you installed remotely; a deploy round-trip.
 
@@ -12,7 +12,7 @@ Here you actually run the tools.
 
 ## Prerequisites checklist
 
-- [x] Nix installed with flakes enabled (Chapter 2). Verify:
+- [x] Nix installed with flakes enabled ([Install Nix and enable flakes](../foundations/install-nix.md)). Verify:
   `nix --version` and `cat ~/.config/nix/nix.conf | grep experimental`.
 - [x] A public SSH key pair on your laptop:
   `ls ~/.ssh/*.pub`. If none, `ssh-keygen -t ed25519`.
@@ -27,14 +27,14 @@ Here you actually run the tools.
 From any directory (the wizard creates a new subdirectory for the
 fleet):
 
-```
+```console
 $ nix run github:reflection-dev/nixops -- new my-fleet
 ```
 
 `nix run` fetches this repo (first time) and executes its default
 app, which is the `new` scaffolder. The `--` after `nixops`
 separates arguments to `nix run` itself from arguments to the
-wrapped program (Chapter 4 covered this).
+wrapped program ([Flakes](../foundations/flakes.md) covered this).
 
 The wizard asks:
 
@@ -49,12 +49,12 @@ The wizard asks:
    `admin_${USER}`). Cosmetic; pick something meaningful if you
    will have multiple admins.
 5. **`git init`?** Recommended yes; the wizard makes a first commit
-   so the tree is committed (Chapter 4 explains why this matters
+   so the tree is committed ([Flakes](../foundations/flakes.md) explains why this matters
    for `path:` inputs).
 
 When it finishes:
 
-```
+```text
 created ./my-fleet/
 
 Next:
@@ -66,7 +66,7 @@ Next:
 
 ## Step 2: inspect what was scaffolded
 
-```
+```console
 $ cd my-fleet
 $ ls -a
 .gitignore  .sops.yaml  flake.nix  hosts.nix  README.md
@@ -88,11 +88,11 @@ Five files. Open each in your editor. What you see:
   material).
 - **`README.md`** -- a one-page reminder of the ops commands.
 
-Chapter 10 walks each file in detail. For now, glance and move on.
+[Anatomy of an instance repo](anatomy-of-an-instance.md) walks each file in detail. For now, glance and move on.
 
 ## Step 3: enter the devShell
 
-```
+```console
 $ nix develop
 nixops devShell -- 0 host(s) in inventory
 ```
@@ -101,7 +101,7 @@ You are now in a shell where `ssh`, `add-host`, `install-host`,
 `update-secrets`, `deploy`, plus `sops`, `age`, `ssh-to-age`,
 `nixos-anywhere`, `jq`, `gum` are on `PATH`. Confirm:
 
-```
+```console
 $ which ssh
 /nix/store/...-ssh/bin/ssh
 $ which install-host
@@ -120,7 +120,7 @@ the devShell automatic when you `cd` into the repo. See
 
 ## Step 4: add a host to the inventory
 
-```
+```console
 $ add-host web-1
 IP address: 1.2.3.4
 ```
@@ -132,7 +132,7 @@ IP address: 1.2.3.4
    (empty module -- the real one comes back from `install-host`);
 3. appends an entry to `hosts.nix`:
 
-    ```
+    ```nix
     web-1 = {
       ip      = "1.2.3.4";
       modules = [ ./hosts/web-1 ];
@@ -147,18 +147,18 @@ scaffolds the directory but does not install anything.
 Now the real thing. Make sure you have root SSH access to the
 target from your workstation:
 
-```
+```console
 $ ssh root@1.2.3.4 uname -a
 Linux debian-12 6.1.0-... x86_64 GNU/Linux
 ```
 
 Then, from inside the devShell in your fleet repo:
 
-```
+```console
 $ install-host web-1
 ```
 
-This is going to do everything you learned in Chapters 6-8, in
+This is going to do everything you learned in [Secrets with sops-nix](sops-nix.md), [Remote install with nixos-anywhere](nixos-anywhere.md), and [Deploying with deploy-rs](deploy-rs.md), in
 order. Watch the output; every line maps to something you have
 seen:
 
@@ -177,7 +177,7 @@ Coffee break. First deploy on a small VPS is 5-10 minutes.
 When it finishes, the host has been reinstalled with your NixOS
 configuration. Verify:
 
-```
+```console
 $ ssh web-1
 [root@web-1:~]# nixos-version
 25.11.20260315.abcdef1 (Vicuna)
@@ -195,7 +195,7 @@ laptop key. What's next?
 
 Let's open the firewall for HTTP. Edit `hosts.nix`:
 
-```
+```nix
 web-1 = {
   ip      = "1.2.3.4";
   modules = [ ./hosts/web-1 ];
@@ -205,14 +205,14 @@ web-1 = {
 
 Any field on the inventory entry that is not `ip`, `system`, or
 `modules` becomes an inline module fragment for that host (see
-Chapter 5 for the `specialArgs` + inline-module trick in
+[NixOS and the module system](../foundations/nixos-and-modules.md) for the `specialArgs` + inline-module trick in
 `mkNixosConfigs`). So this line is equivalent to writing a module
 that sets `nixops.firewall.allowedTCPPorts = [ 80 443 ];` -- which
 `modules/firewall.nix` picks up.
 
 Now deploy:
 
-```
+```console
 $ deploy web-1
 ```
 
@@ -226,7 +226,7 @@ deploy-rs:
 
 Verify:
 
-```
+```console
 $ ssh web-1
 [root@web-1:~]# iptables -L -n | grep -E "80|443"
 ```
@@ -248,7 +248,7 @@ $ ssh web-1
 
 ## The whole loop, once you know it
 
-```
+```text
 edit *.nix           # change desired state
 git add + commit     # snapshot it
 deploy [name]        # ship it
@@ -260,13 +260,13 @@ If a change involves secrets: `update-secrets [name]` before
 
 ## What next
 
-Chapter 10 walks every file in the instance repo in detail so you
-know what to change when. Chapter 11 covers the day-two loop -- key
+[Anatomy of an instance repo](anatomy-of-an-instance.md) walks every file in the instance repo in detail so you
+know what to change when. [Day-two operations](../operating/day-two-operations.md) covers the day-two loop -- key
 rotation, adding admins, splitting hosts across environments,
-diagnosing a failed deploy. Chapter 12 shows how to write your
+diagnosing a failed deploy. [Writing host-specific modules](../operating/writing-host-modules.md) shows how to write your
 own host-specific modules (adding a real service, a disko layout).
 
-Next: [Chapter 10 -- Anatomy of an instance repo.](anatomy-of-an-instance.md)
+Next: [Anatomy of an instance repo](anatomy-of-an-instance.md)
 
 ## References for this chapter
 

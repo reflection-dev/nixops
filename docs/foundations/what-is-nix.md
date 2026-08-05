@@ -8,7 +8,7 @@ time: "20 minutes of reading"
 > **Outcome:** a working mental model of Nix, NixOS, and where `nixops` fits.
 
 You do not need to touch a keyboard for this chapter. It exists so
-that when Chapter 3 tells you to write `{ pkgs, ... }: { ... }`, you
+that when [The Nix language](nix-language.md) tells you to write `{ pkgs, ... }: { ... }`, you
 know why.
 
 ## The one-paragraph pitch
@@ -74,11 +74,11 @@ Nix addresses these in a specific way:
 - **Secrets have first-class module support.** `sops-nix` lets you
   commit encrypted secrets to git, decrypt them on-host with a key
   that never leaves the host, and reference them from any NixOS
-  module (Chapter 6).
+  module ([Secrets with sops-nix](../deploying/sops-nix.md)).
 - **Deploys are atomic and reversible.** `deploy-rs` runs your new
   configuration, pings your workstation from the target after
   activation, and if the ping does not come back it automatically
-  rolls back to the previous generation (Chapter 8).
+  rolls back to the previous generation ([Deploying with deploy-rs](../deploying/deploy-rs.md)).
 
 ## Where Nix fits vs. what you know
 
@@ -197,11 +197,11 @@ back when a term feels familiar-but-fuzzy.
 
 ## Prerequisites for what comes next
 
-- Chapter 2 will install Nix on your workstation. That is a one-time
+- [Install Nix and enable flakes](install-nix.md) will install Nix on your workstation. That is a one-time
   step that touches your filesystem outside your home directory.
-  Read Chapter 2 in full before running any of its commands.
+  Read [Install Nix and enable flakes](install-nix.md) in full before running any of its commands.
 
-Ready? [Chapter 2 -- Install Nix and enable flakes.](install-nix.md)
+Ready? [Install Nix and enable flakes](install-nix.md)
 
 ## References for this chapter
 

@@ -1,6 +1,6 @@
 # 14 -- Further reading
 
-> **Prerequisite:** [Chapter 13](troubleshooting.md), or just an appetite.
+> **Prerequisite:** [Troubleshooting](troubleshooting.md), or just an appetite.
 >
 > **Outcome:** you know where to go for depth in every direction the tutorial only touched on.
 
@@ -95,7 +95,7 @@ dense; use search.
   Foundation's guided tutorials. Complements this doc.
 - **[Xe Iaso: NixOS series](https://xeiaso.net/tags/nixos)** --
   well-written blog series. The flake tutorials are worth reading
-  after Chapter 4.
+  after [Flakes](../foundations/flakes.md).
 
 ## Deploy tools
 

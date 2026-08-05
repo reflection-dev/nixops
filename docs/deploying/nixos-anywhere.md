@@ -3,7 +3,7 @@ time: "30 minutes"
 ---
 # 07 -- Remote install with nixos-anywhere
 
-> **Prerequisite:** [Chapter 6](sops-nix.md).
+> **Prerequisite:** [Secrets with sops-nix](sops-nix.md).
 >
 > **Outcome:** you know how a Linux-of-any-kind target becomes a NixOS host in one command, without a rescue image or console access; you can read `scripts/install-host.sh` and understand every step.
 
@@ -81,7 +81,7 @@ but before the reboot. `install-host` uses this to plant the target's
 
 - the host has the *same* SSH host key across all its future life
   (no re-fingerprinting after every reinstall);
-- sops-nix (Chapter 6) can decrypt on the very first boot, because
+- sops-nix ([Secrets with sops-nix](sops-nix.md)) can decrypt on the very first boot, because
   the age recipient it needs is derived from that host key.
 
 Only files that must exist *before* first boot need to go through
@@ -103,9 +103,9 @@ you drop your own `hosts/<name>/disko.nix` next to
 `hardware-configuration.nix`, and reference it from the host's
 modules.
 
-Chapter 12 has a concrete example. For now, the shape:
+[Writing host-specific modules](../operating/writing-host-modules.md) has a concrete example. For now, the shape:
 
-```
+```nix
 # hosts/web-1/disko.nix
 {
   disko.devices.disk.main = {
@@ -162,7 +162,7 @@ sections in order:
    host key into `EXTRA/etc/ssh/`, preserving mode 0400.
 8. **Invoke `nixos-anywhere`** (lines 165-168):
 
-    ```
+    ```bash
     nixos-anywhere \
       --flake ".#${NAME}" \
       --extra-files "$EXTRA" \
@@ -218,7 +218,7 @@ next chapter covers how you keep updating that system over time --
 in a way that survives partial failures and lets you roll back
 safely.
 
-Next: [Chapter 8 -- Deploying with deploy-rs.](deploy-rs.md)
+Next: [Deploying with deploy-rs](deploy-rs.md)
 
 ## References for this chapter
 

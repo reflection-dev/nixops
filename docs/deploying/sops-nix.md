@@ -3,7 +3,7 @@ time: "40 minutes"
 ---
 # 06 -- Secrets with sops-nix
 
-> **Prerequisite:** [Chapter 5](../foundations/nixos-and-modules.md).
+> **Prerequisite:** [NixOS and the module system](../foundations/nixos-and-modules.md).
 >
 > **Outcome:** you understand what `.sops.yaml`, an age key, and `sops.secrets.*` are; you know how a secret gets from your laptop to `/run/secrets/<name>` on a NixOS host; you know how this repo's `install-host` and `update-secrets` scripts orchestrate the flow.
 
@@ -33,7 +33,7 @@ NixOS's module system to give you (3) and (4).
 
 ## The 90-second picture
 
-```
+```text
                        .sops.yaml
                        (recipients + rules)
                              |
@@ -61,7 +61,7 @@ Keys are short strings starting with `AGE-SECRET-KEY-` (private) or
 -- you generate a key, share the public half, keep the private
 half.
 
-```
+```console
 $ age-keygen -o ~/.config/sops/age/keys.txt
 Public key: age1abc123...
 ```
@@ -72,7 +72,7 @@ lives in that file; nothing else needs to know it.
 **Never `cat` or read the private-key file directly.** To display
 the public key from an existing private-key file:
 
-```
+```console
 $ age-keygen -y ~/.config/sops/age/keys.txt
 age1abc123...
 ```
@@ -92,7 +92,7 @@ key is mathematically compatible with age, and the tool
 [`ssh-to-age`](https://github.com/Mic92/ssh-to-age) converts it to
 an age recipient in one line:
 
-```
+```console
 $ ssh-to-age -i /etc/ssh/ssh_host_ed25519_key.pub
 age1def456...
 ```
@@ -102,7 +102,7 @@ extra key material*: sops-nix decrypts at boot using the SSH host
 key that is already there. The `modules/sops.nix` module says
 exactly that:
 
-```
+```nix
 sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 ```
 
@@ -123,7 +123,7 @@ The rulebook. Two sections:
 
 The scaffold from `templates/default/.sops.yaml`:
 
-```
+```yaml
 keys:
   - &admin_you   age1REPLACE_WITH_YOUR_LAPTOP_AGE_PUBLIC_KEY
 
@@ -132,7 +132,7 @@ creation_rules: []
 
 After `install-host web-1` runs, the file grows into something like:
 
-```
+```yaml
 keys:
   - &admin_you   age1youdefinitely...
   - &web-1       age1web1derivedfromitssshkey...
@@ -160,7 +160,7 @@ and [Mic92/sops-nix -- README](https://github.com/Mic92/sops-nix).
 
 An encrypted `secrets/web-1.yaml` looks like:
 
-```
+```yaml
 # somewhat trimmed
 db_password: ENC[AES256_GCM,data:...,iv:...,tag:...]
 api_token:   ENC[AES256_GCM,...]
@@ -185,7 +185,7 @@ sops:
 
 To decrypt as an admin from your laptop:
 
-```
+```console
 $ sops secrets/web-1.yaml
 ```
 
@@ -208,7 +208,7 @@ Two workflows:
 
 On the NixOS side, sops-nix gives you a module option:
 
-```
+```nix
 sops.secrets.db_password = {
   sopsFile = ./secrets/web-1.yaml;
   owner    = "myservice";
@@ -226,7 +226,7 @@ At boot, sops-nix will:
 
 Your service module then references the plaintext path:
 
-```
+```nix
 systemd.services.myservice.serviceConfig.EnvironmentFile =
   config.sops.secrets.db_password.path;
 ```
@@ -244,7 +244,7 @@ secrets, `update-secrets [host]` in the devShell does the
 inventory-driven equivalent of running `sops` by hand. From the top
 of [`scripts/update-secrets.sh`](../scripts/update-secrets.sh):
 
-```
+```bash
 # Reads the expected keys from
 #   .#nixosConfigurations.<name>.config.sops.secrets
 # and prompts (via gum) for any that are not yet set in
@@ -315,7 +315,7 @@ does not change. Details: [getsops/sops -- KMS](https://github.com/getsops/sops#
 You know the secret pipeline. Next is the first-boot pipeline:
 how a bare Linux target becomes a NixOS host without a rescue image.
 
-Next: [Chapter 7 -- Remote install with nixos-anywhere.](nixos-anywhere.md)
+Next: [Remote install with nixos-anywhere](nixos-anywhere.md)
 
 ## References for this chapter
 

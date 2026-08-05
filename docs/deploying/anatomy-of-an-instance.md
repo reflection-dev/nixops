@@ -3,7 +3,7 @@ time: "30 minutes"
 ---
 # 10 -- Anatomy of an instance repo
 
-> **Prerequisite:** [Chapter 9](your-first-fleet.md) (you have a scaffolded fleet repo).
+> **Prerequisite:** [Your first fleet](your-first-fleet.md) (you have a scaffolded fleet repo).
 >
 > **Outcome:** you can point at any file in the fleet repo and say what it does, why it exists, and when you edit it.
 
@@ -15,7 +15,7 @@ Open your fleet repo alongside this chapter.
 
 ## File tree
 
-```
+```text
 my-fleet/
 |-- flake.nix           inputs + outputs (nixosConfigurations, deploy.nodes, devShell)
 |-- hosts.nix           plain-data inventory
@@ -41,7 +41,7 @@ Files ops tooling edits: `.sops.yaml` (`install-host`),
 
 The whole entry point. Post-scaffold, it looks like:
 
-```
+```nix
 {
   description = "my-fleet";
 
@@ -88,16 +88,16 @@ What each piece is for:
   authoritative source for root's `authorized_keys` on every host.
   Add a colleague by appending to the list and running `deploy`.
 - **`nixosConfigurations = mkNixosConfigs { hosts; sshKeys; }`**.
-  Chapter 5's `nixosSystem` factory, applied to each inventory
+  [NixOS and the module system](../foundations/nixos-and-modules.md)'s `nixosSystem` factory, applied to each inventory
   entry. Produces one config per host, all sharing the same base
-  modules (Chapter 5) plus their per-host modules.
+  modules ([NixOS and the module system](../foundations/nixos-and-modules.md)) plus their per-host modules.
 - **`deploy.nodes = mkDeploy self.nixosConfigurations`**.
-  Chapter 8's factory. Turns each `nixosConfig` into a deploy-rs
+  [Deploying with deploy-rs](deploy-rs.md)'s factory. Turns each `nixosConfig` into a deploy-rs
   node.
-- **`checks.${system}`**. Chapter 8's `deployChecks`. Runs on `nix
+- **`checks.${system}`**. [Deploying with deploy-rs](deploy-rs.md)'s `deployChecks`. Runs on `nix
   flake check` / CI to catch broken deploys before they touch a
   target.
-- **`devShells.${system}.default`**. Chapter 9's devShell -- what
+- **`devShells.${system}.default`**. [Your first fleet](your-first-fleet.md)'s devShell -- what
   you get with `nix develop`.
 
 **When to edit:**
@@ -113,7 +113,7 @@ What each piece is for:
 
 Plain data. Every top-level key is a hostname.
 
-```
+```nix
 {
   web-1 = {
     ip      = "1.2.3.4";
@@ -155,7 +155,7 @@ as an inline module, and adds `networking.hostName = name;`.
 
 The scaffold only has your admin recipient:
 
-```
+```yaml
 keys:
   - &admin_you   age1youdefinitely...
 
@@ -164,7 +164,7 @@ creation_rules: []
 
 After you `install-host web-1`, it grows:
 
-```
+```yaml
 keys:
   - &admin_you   age1youdefinitely...
   - &web-1       age1web1derivedfromitssshkey...
@@ -175,7 +175,7 @@ creation_rules:
       - age: [ *admin_you, *web-1 ]
 ```
 
-Chapter 6 covers this in detail; this chapter is just naming which
+[Secrets with sops-nix](sops-nix.md) covers this in detail; this chapter is just naming which
 file it is.
 
 **When to edit by hand:**
@@ -193,7 +193,7 @@ anchors, path_regex rules) unless you know what you are doing.
 
 ## `.gitignore`
 
-```
+```text
 result
 result-*
 .direnv/
@@ -218,7 +218,7 @@ fleet grows a habit that is not obvious from the file layout.
 
 ## `flake.lock`
 
-Auto-generated. Commit it. Chapter 4 covers what it is; you never
+Auto-generated. Commit it. [Flakes](../foundations/flakes.md) covers what it is; you never
 edit it by hand.
 
 ## `hosts/<name>/`
@@ -234,13 +234,13 @@ Typical contents:
 - **`hardware-configuration.nix`** -- generated during install (by
   `nixos-generate-config` on the target). `nixos-anywhere` prints
   it after a successful install; you copy it in and commit.
-- **`disko.nix`** (optional; Chapter 12) -- your disk layout.
+- **`disko.nix`** (optional; [Writing host-specific modules](../operating/writing-host-modules.md)) -- your disk layout.
 - **`default.nix`** -- the host's own module. Imports the two
   above; sets host-specific services and options.
 
 Example `hosts/web-1/default.nix`:
 
-```
+```nix
 { config, pkgs, ... }: {
   imports = [
     ./hardware-configuration.nix
@@ -259,7 +259,7 @@ gets only the base configuration. Add services incrementally.
 
 ## `secrets/<name>.yaml`
 
-Encrypted (see Chapter 6). One per host that declares
+Encrypted (see [Secrets with sops-nix](sops-nix.md)). One per host that declares
 `sops.secrets.*`. Edit through `sops secrets/<name>.yaml` (drops
 you into `$EDITOR`) or with the `update-secrets` script.
 
@@ -304,7 +304,7 @@ naming.
 You know every file. Next chapter is the daily loop -- rotating
 keys, adding admins, splitting a deploy, diagnosing a failed one.
 
-Next: [Chapter 11 -- Day-two operations.](../operating/day-two-operations.md)
+Next: [Day-two operations](../operating/day-two-operations.md)
 
 ## References for this chapter
 

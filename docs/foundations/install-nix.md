@@ -3,7 +3,7 @@ time: "15 minutes"
 ---
 # 02 -- Install Nix and enable flakes
 
-> **Prerequisite:** [Chapter 1](what-is-nix.md).
+> **Prerequisite:** [What Nix is and why it matters](what-is-nix.md).
 >
 > **Outcome:** `nix run nixpkgs#hello` prints "Hello, world!" from your shell, on any Linux, macOS, or WSL2 workstation.
 
@@ -25,7 +25,7 @@ to the "enable flakes" section below.
 
 ## Install (Determinate)
 
-```
+```console
 $ curl --proto '=https' --tlsv1.2 -sSf -L \
     https://install.determinate.systems/nix | sh -s -- install
 ```
@@ -42,7 +42,7 @@ The installer will:
 
 Open a new shell, then check:
 
-```
+```console
 $ nix --version
 nix (Determinate Nix) 2.24.10
 ```
@@ -55,14 +55,14 @@ Any version >= 2.18 works for this tutorial.
 
 If you cannot or will not use the Determinate installer:
 
-```
+```console
 $ sh <(curl -L https://nixos.org/nix/install) --daemon
 ```
 
 Then, because upstream does not enable flakes by default, create
 `~/.config/nix/nix.conf` with:
 
-```
+```ini
 experimental-features = nix-command flakes
 ```
 
@@ -83,7 +83,7 @@ constrained environments; you will not hit them.
 Flakes are still labelled "experimental" upstream but are used by
 every serious NixOS project today, including this one. Check:
 
-```
+```console
 $ cat ~/.config/nix/nix.conf 2>/dev/null | grep experimental
 experimental-features = nix-command flakes
 ```
@@ -94,7 +94,7 @@ puts it there.
 
 ## Sanity check: run a package
 
-```
+```console
 $ nix run nixpkgs#hello
 Hello, world!
 ```
@@ -113,7 +113,7 @@ Second time you run it, it is instant -- the store already has it.
 
 ## Try a dev shell
 
-```
+```console
 $ nix shell nixpkgs#jq nixpkgs#curl
 ```
 
@@ -124,9 +124,9 @@ persisted on disk beyond the store copies.
 ## Try running this repo's wizard (dry run)
 
 You do not have to actually make a fleet yet -- we do that in
-Chapter 9. But you can prove the moving parts are wired:
+[Your first fleet](../deploying/your-first-fleet.md). But you can prove the moving parts are wired:
 
-```
+```console
 $ nix run github:reflection-dev/nixops -- --help
 ```
 
@@ -140,7 +140,7 @@ they hit the store.
   -- the `experimental-features` line in `nix.conf` is missing or
   the file is in the wrong place. Fix and re-run.
 - **`error: git tree ... is dirty`** -- you tried to build from a
-  local path that has uncommitted changes. Chapter 4 covers this.
+  local path that has uncommitted changes. [Flakes](flakes.md) covers this.
 - **`/nix` on a mounted volume is slow** -- that is a filesystem
   problem, not a Nix problem. Move `/nix` to a fast local disk.
 - **macOS + Apple silicon + Rosetta confusion** -- if you see
@@ -171,7 +171,7 @@ Next: the language itself. You cannot read `flake.nix` or `hosts.nix`
 without knowing what an attribute set is, so we do that before
 touching flakes.
 
-Next: [Chapter 3 -- The Nix language.](nix-language.md)
+Next: [The Nix language](nix-language.md)
 
 ## References for this chapter
 

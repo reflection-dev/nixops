@@ -3,7 +3,7 @@ time: "45 minutes"
 ---
 # 05 -- NixOS and the module system
 
-> **Prerequisite:** [Chapter 4](flakes.md).
+> **Prerequisite:** [Flakes](flakes.md).
 >
 > **Outcome:** you can read every module in `modules/`; you know how options merge; you can look up any NixOS option in the manual and understand its type.
 
@@ -38,7 +38,7 @@ produces the final `config` value. That value is what
 
 ## The simplest module
 
-```
+```nix
 { config, lib, pkgs, ... }:
 {
   services.openssh.enable = true;
@@ -56,7 +56,7 @@ four you will use.
 
 ## The three parts of a full module
 
-```
+```nix
 { config, lib, pkgs, ... }: let
   cfg = config.myapp;
 in {
@@ -101,7 +101,7 @@ This is safe because of lazy evaluation.
 
 Every option declaration follows the same shape:
 
-```
+```nix
 lib.mkOption {
   type = lib.types.<TYPE>;
   default = <VALUE>;                     # optional
@@ -163,7 +163,7 @@ get an error unless one uses `mkDefault` / `mkForce` / `mkOverride`.
 Open [`modules/`](../modules/). The aggregator [`modules/default.nix`](../modules/default.nix)
 is the shortest:
 
-```
+```nix
 { lib, ... }: {
   imports = [
     ./nix-defaults.nix
@@ -192,7 +192,7 @@ Two things happen here:
 
 Then [`modules/ssh.nix`](../modules/ssh.nix):
 
-```
+```nix
 { config, lib, ... }: let
   cfg = config.nixops.ssh;
 in {
@@ -242,7 +242,7 @@ Read it end-to-end; it should look boringly familiar by now.
 
 You can inline a module without a separate file:
 
-```
+```nix
 imports = [
   { services.nginx.enable = true; }
 ];
@@ -258,7 +258,7 @@ When you build a NixOS configuration with `nixpkgs.lib.nixosSystem`,
 you can pass `specialArgs = { foo = ...; }` -- those become extra
 arguments to every module. This repo passes `sshKeys`:
 
-```
+```nix
 lib/mkNixosConfigs.nix:
   nixpkgs.lib.nixosSystem {
     inherit system;
@@ -269,7 +269,7 @@ lib/mkNixosConfigs.nix:
 
 Then `modules/users.nix`:
 
-```
+```nix
 { sshKeys, ... }: {
   users.users.root.openssh.authorizedKeys.keys = sshKeys;
 }
@@ -300,8 +300,8 @@ script run. In this repo you never invoke that flow by hand -- the
 devShell wraps it:
 
 - `install-host <name>` for the very first install of a target
-  (Chapter 7).
-- `deploy [name]` for every subsequent change (Chapter 8).
+  ([Remote install with nixos-anywhere](../deploying/nixos-anywhere.md)).
+- `deploy [name]` for every subsequent change ([Deploying with deploy-rs](../deploying/deploy-rs.md)).
 
 Under the hood these are `nixos-anywhere` and `deploy-rs`
 respectively, both of which end up calling activation scripts that
@@ -309,7 +309,7 @@ NixOS builds from your modules -- the same activation NixOS's
 built-in `nixos-rebuild` would run locally. You will only need to
 know about `nixos-rebuild` for two edge cases: recovering a host
 from its console when SSH is broken, or local testing on a NixOS
-workstation (Chapter 12).
+workstation ([Writing host-specific modules](../operating/writing-host-modules.md)).
 
 Reference: [NixOS Manual -- nixos-rebuild](https://nixos.org/manual/nixos/stable/#sec-nixos-rebuild).
 
@@ -319,10 +319,10 @@ You now have the whole language stack: Nix, flakes, and the module
 system. The next two chapters cover the tools this fleet base is
 built around -- sops-nix for secrets (6), nixos-anywhere for
 bootstrap (7), and deploy-rs for continuous deploys (8) -- so that
-Chapter 9 can put them together with a full end-to-end walkthrough
+[Your first fleet](../deploying/your-first-fleet.md) can put them together with a full end-to-end walkthrough
 of the ops loop.
 
-Next: [Chapter 6 -- Secrets with sops-nix.](../deploying/sops-nix.md)
+Next: [Secrets with sops-nix](../deploying/sops-nix.md)
 
 ## References for this chapter
 

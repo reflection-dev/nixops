@@ -3,7 +3,7 @@ time: "45 minutes -- longer if you follow along in `nix repl`"
 ---
 # 03 -- The Nix language
 
-> **Prerequisite:** [Chapter 2](install-nix.md) (you have a working `nix` command).
+> **Prerequisite:** [Install Nix and enable flakes](install-nix.md) (you have a working `nix` command).
 >
 > **Outcome:** you can read every construct in this repo's `flake.nix`, `lib/*.nix`, and `modules/*.nix` without needing a lookup.
 
@@ -21,7 +21,7 @@ Reference Manual -- Language](https://nix.dev/manual/nix/stable/language/).
 
 Start the REPL in a shell so you can type each example:
 
-```
+```console
 $ nix repl
 Welcome to Nix. Type :? for help.
 nix-repl>
@@ -33,7 +33,7 @@ Exit with `:q`. Reload with `:r`.
 
 Nix has the values you would expect and nothing exotic:
 
-```
+```nix
 nix-repl> 42
 42
 
@@ -66,7 +66,7 @@ Two things to internalise now:
 
 Two forms:
 
-```
+```nix
 nix-repl> "single-line string"
 "single-line string"
 
@@ -79,7 +79,7 @@ nix-repl> ''
 
 String interpolation uses `${...}`:
 
-```
+```nix
 nix-repl> let name = "web-1"; in "hello, ${name}"
 "hello, web-1"
 ```
@@ -92,21 +92,21 @@ rarely need this.
 The workhorse type. Keyed, like a JSON object, but the keys are
 Nix identifiers (or quoted strings for anything else):
 
-```
+```nix
 nix-repl> { hostname = "web-1"; ip = "1.2.3.4"; }
 { hostname = "web-1"; ip = "1.2.3.4"; }
 ```
 
 Access with `.`:
 
-```
+```nix
 nix-repl> let h = { name = "web"; ip = "1.2.3.4"; }; in h.ip
 "1.2.3.4"
 ```
 
 Nested paths work as attribute paths:
 
-```
+```nix
 nix-repl> { services.nginx.enable = true; }
 { services = { nginx = { enable = true; }; }; }
 ```
@@ -116,7 +116,7 @@ sugar for the nested set. This is *the* pattern in NixOS modules.
 
 Merge two sets with `//`:
 
-```
+```nix
 nix-repl> { a = 1; } // { b = 2; }
 { a = 1; b = 2; }
 
@@ -128,7 +128,7 @@ nix-repl> { a = 1; } // { a = 2; }    # right side wins
 
 Define local bindings; return the expression after `in`.
 
-```
+```nix
 nix-repl> let
             name = "web-1";
             ip = "1.2.3.4";
@@ -139,7 +139,7 @@ nix-repl> let
 
 You will see `let ... in { ... }` at the top of most files:
 
-```
+```nix
 { nixpkgs, sops-nix, self }:      # arguments (see functions below)
 { hosts, sshKeys ? [ ] }:
 let
@@ -153,14 +153,14 @@ in
 A function takes one argument and returns an expression. The
 `arg: body` form:
 
-```
+```nix
 nix-repl> (x: x + 1) 3
 4
 ```
 
 Multiple arguments are curried:
 
-```
+```nix
 nix-repl> (x: y: x + y) 2 3
 5
 ```
@@ -169,21 +169,21 @@ But the more common pattern in Nix code is a function that takes a
 single **attribute set** with named fields. This is how modules,
 flakes, and library functions look:
 
-```
+```nix
 nix-repl> ({ x, y }: x + y) { x = 2; y = 3; }
 5
 ```
 
 Optional arguments have defaults with `?`:
 
-```
+```nix
 nix-repl> ({ x, y ? 10 }: x + y) { x = 2; }
 12
 ```
 
 The `...` allows extra fields that are ignored:
 
-```
+```nix
 nix-repl> ({ x, ... }: x) { x = 2; y = 3; z = 4; }
 2
 ```
@@ -194,7 +194,7 @@ Every NixOS module you will write starts with `{ config, lib, pkgs,
 
 Look at `modules/ssh.nix`:
 
-```
+```nix
 { config, lib, ... }: let
   cfg = config.nixops.ssh;
 in {
@@ -212,7 +212,7 @@ and `config` fields.
 `with foo; expr` brings the attributes of `foo` into scope in
 `expr`. You will see this in package lists:
 
-```
+```nix
 environment.systemPackages = with pkgs; [
   git vim htop
 ];
@@ -227,7 +227,7 @@ sparingly (large `with` scopes hide where names come from).
 the file's top-level expression is a function, you can call it in
 one go:
 
-```
+```nix
 import ./hosts.nix                        # returns the value from hosts.nix
 import ./lib/mkDeploy.nix { inherit deploy-rs; }   # imports then calls
 ```
@@ -238,7 +238,7 @@ Both are used across this repo.
 
 `if ... then ... else ...` (all three branches required):
 
-```
+```nix
 nix-repl> if 3 > 2 then "yes" else "no"
 "yes"
 ```
@@ -248,7 +248,7 @@ nix-repl> if 3 > 2 then "yes" else "no"
 Shorthand for copying names from an enclosing scope into an
 attribute set:
 
-```
+```nix
 nix-repl> let a = 1; b = 2; in { inherit a b; }
 { a = 1; b = 2; }
 ```
@@ -257,7 +257,7 @@ Equivalent to `{ a = a; b = b; }`. Very common in flakes.
 
 `inherit (foo) a b;` pulls `foo.a` and `foo.b`:
 
-```
+```nix
 nix-repl> let s = { a = 1; b = 2; c = 3; }; in { inherit (s) a b; }
 { a = 1; b = 2; }
 ```
@@ -307,7 +307,7 @@ without cycles, but the order of appearance is free.
 
 ## Putting it together: read this repo's `lib/mkDeploy.nix`
 
-```
+```nix
 { deploy-rs }:
 nixosConfigurations:
 builtins.mapAttrs (_name: nixosConfig: {
@@ -337,9 +337,9 @@ Every construct in the file is one from this chapter.
 
 ## What next
 
-- Chapter 4 introduces flakes -- the packaging that lets Nix
+- [Flakes](flakes.md) introduces flakes -- the packaging that lets Nix
   reference other repositories reproducibly.
-- Chapter 5 introduces the NixOS module system -- the vocabulary
+- [NixOS and the module system](nixos-and-modules.md) introduces the NixOS module system -- the vocabulary
   behind `options` / `config` / `imports`.
 
 If any of the above still feels shaky, spend 20 minutes in `nix
@@ -347,7 +347,7 @@ repl` typing the examples. Reading Nix without having typed it is
 like reading Python from a screenshot; you will re-learn everything
 the first time you type it.
 
-Next: [Chapter 4 -- Flakes.](flakes.md)
+Next: [Flakes](flakes.md)
 
 ## References for this chapter
 

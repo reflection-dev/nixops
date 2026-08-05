@@ -3,15 +3,15 @@ time: "30 minutes"
 ---
 # 08 -- Deploying with deploy-rs
 
-> **Prerequisite:** [Chapter 7](nixos-anywhere.md).
+> **Prerequisite:** [Remote install with nixos-anywhere](nixos-anywhere.md).
 >
 > **Outcome:** you know what `deploy-rs` does that `nixos-rebuild` does not; you understand magic-rollback; you can read `lib/mkDeploy.nix` and the `deploy.nodes` output.
 
-Once a NixOS host exists (courtesy of Chapter 7), you need to keep
+Once a NixOS host exists (courtesy of [Remote install with nixos-anywhere](nixos-anywhere.md)), you need to keep
 updating it -- new package versions, new services, security fixes.
 In this repo the answer is one command from the devShell:
 
-```
+```console
 $ deploy [name]
 ```
 
@@ -39,7 +39,7 @@ The fleet-side wins over "SSH in and rebuild by hand":
 `deploy-rs` reads a `deploy` output from your flake. That output is
 an attribute set:
 
-```
+```nix
 deploy.nodes.<name>.hostname       # where to ssh
 deploy.nodes.<name>.sshUser        # as whom
 deploy.nodes.<name>.profiles.<p>.path  # the store path to activate
@@ -70,7 +70,7 @@ the previous SSH session open.
 Look at [`lib/mkDeploy.nix`](../lib/mkDeploy.nix). It is 13 lines
 including a comment:
 
-```
+```nix
 { deploy-rs }:
 nixosConfigurations:
 builtins.mapAttrs (_name: nixosConfig: {
@@ -84,7 +84,7 @@ builtins.mapAttrs (_name: nixosConfig: {
 }) nixosConfigurations
 ```
 
-Read it now, with Chapter 3 fresh in mind:
+Read it now, with [The Nix language](../foundations/nix-language.md) fresh in mind:
 
 - Function taking `{ deploy-rs }` -> function taking a
   `nixosConfigurations` attrset -> a mapAttrs over it.
@@ -97,7 +97,7 @@ Read it now, with Chapter 3 fresh in mind:
 
 The instance flake wires it in:
 
-```
+```nix
 deploy.nodes = nixops.lib.mkDeploy self.nixosConfigurations;
 checks.${system} = deploy-rs.lib.${system}.deployChecks self.deploy;
 ```
@@ -146,7 +146,7 @@ Reference: [deploy-rs README -- Magic Rollback](https://github.com/serokell/depl
 
 `scripts/deploy.sh` is a two-condition wrapper. From the source:
 
-```
+```bash
 if [ "$#" -eq 0 ]; then
   exec deploy .
 fi
@@ -202,7 +202,7 @@ perfectly fine.
   config aliases (`~/.ssh/config`) or `ProxyJump`.
 - **"cannot decrypt secret"** on first-boot after deploy -- you
   changed `.sops.yaml`'s recipients but forgot to `sops updatekeys
-  secrets/*.yaml`. See Chapter 6.
+  secrets/*.yaml`. See [Secrets with sops-nix](sops-nix.md).
 - **Deploy hangs on activation** -- the target is applying a
   slow change (e.g. rebuilding a kernel initrd). Give it a few
   minutes; use `deploy --debug-logs` next time to see what runs.
@@ -242,12 +242,12 @@ the fleet base does not care.
 
 ## What next
 
-You now have the whole stack: Nix (Chapter 2-4), NixOS (Chapter 5),
-sops-nix (Chapter 6), nixos-anywhere (Chapter 7), deploy-rs (this
-chapter). Chapter 9 uses all of it to walk through actually
+You now have the whole stack: Nix ([Install Nix and enable flakes](../foundations/install-nix.md)-4), NixOS ([NixOS and the module system](../foundations/nixos-and-modules.md)),
+sops-nix ([Secrets with sops-nix](sops-nix.md)), nixos-anywhere ([Remote install with nixos-anywhere](nixos-anywhere.md)), deploy-rs (this
+chapter). [Your first fleet](your-first-fleet.md) uses all of it to walk through actually
 scaffolding, installing, and deploying a fleet from zero.
 
-Next: [Chapter 9 -- Your first fleet.](your-first-fleet.md)
+Next: [Your first fleet](your-first-fleet.md)
 
 ## References for this chapter
 
