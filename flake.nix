@@ -18,6 +18,10 @@
       url = "github:serokell/deploy-rs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -26,6 +30,7 @@
       nixpkgs,
       sops-nix,
       deploy-rs,
+      disko,
       ...
     }:
     let
@@ -39,6 +44,7 @@
       nixosModules.default = {
         imports = [
           sops-nix.nixosModules.sops
+          disko.nixosModules.disko
           ./modules
         ];
       };
