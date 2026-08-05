@@ -62,6 +62,11 @@ in
         "nix-command"
         "flakes"
       ];
+      # Accept flake nixConfig without the interactive "do you want to
+      # allow configuration setting ..." prompt. Scoped to this operator
+      # module -- must NOT land in the base fleet modules, where hosts
+      # run untrusted flakes and blanket trust is a footgun.
+      accept-flake-config = true;
       trusted-users = [
         "root"
         cfg.user
