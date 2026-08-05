@@ -197,14 +197,19 @@ this way is safe.
 
 ## Adding secrets in this repo
 
-Two workflows:
+Three workflows, pick per situation:
 
 - **Interactive** (through `update-secrets`, driven by what the
-  NixOS config declares -- see below). This is the recommended
-  path.
-- **Manual** with `sops secrets/<host>.yaml`. Works fine; just be
-  sure the file already exists and that `.sops.yaml` has a
-  matching `creation_rule`.
+  NixOS config declares -- see below). Recommended for filling
+  values you type by hand.
+- **Non-interactive** (`set-secret <host> <key> <file>`). Reads the
+  value from a file (or `-` for stdin) and writes it through `sops
+  --set`. Useful when the value comes from another command
+  (`openssl rand ...`, `age-keygen ...`, `kubectl get secret ...`)
+  or when scripting a bootstrap. Existing values are overwritten.
+- **Manual** with `sops secrets/<host>.yaml`. Full editor, edits
+  every field at once. Handy for rare surgical fixes; make sure the
+  file exists and `.sops.yaml` has a matching `creation_rule`.
 
 ## `sops.secrets.*` -- the NixOS-side view
 

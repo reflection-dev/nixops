@@ -23,6 +23,7 @@ devShell (`nix develop`).
 | `add-host <name>`       | prompt for IP; scaffold `hosts/<name>/`; append to `hosts.nix`        |
 | `install-host <name>`   | first-boot install via `nixos-anywhere` + sops recipient + secrets    |
 | `update-secrets [name]` | interactively fill any `sops.secrets.*` values not yet set            |
+| `set-secret <host> <key> <file>` | non-interactive: write one secret from a file or stdin (`-`) |
 | `deploy [name]`         | roll the current flake out to one host or the whole fleet             |
 
 Plus (`nix flake update`, `sops`, `age`, `git`) available via
