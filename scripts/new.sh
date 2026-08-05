@@ -19,8 +19,12 @@ if [ -z "$NAME" ]; then
 fi
 
 if [ -e "$NAME" ]; then
-  gum log --level error "'$NAME' already exists"
-  exit 1
+  if [ -d "$NAME" ] && [ -z "$(ls -A "$NAME" 2>/dev/null)" ]; then
+    : # empty directory -- populate in place
+  else
+    gum log --level error "'$NAME' already exists and is not an empty directory"
+    exit 1
+  fi
 fi
 
 if [ -z "${TEMPLATE_DIR:-}" ] || [ ! -d "$TEMPLATE_DIR" ]; then
@@ -113,7 +117,10 @@ ADMIN_NAME="admin_${USER:-nixops}"
 crumb "admin: $ADMIN_NAME"
 
 # --- Scaffold ---
-cp -r "$TEMPLATE_DIR" "$NAME"
+# cp -rT: if $NAME does not exist, it is created and populated; if it
+# exists (and passed the empty-dir check above), contents are copied in.
+mkdir -p "$NAME"
+cp -rT "$TEMPLATE_DIR" "$NAME"
 chmod -R u+w "$NAME"
 cd "$NAME"
 
