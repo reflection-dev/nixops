@@ -49,14 +49,22 @@ mapfile -t PUBKEYS < <(find "$HOME/.ssh" -maxdepth 1 -name "*.pub" -type f 2>/de
 CHOSEN_KEYS=()
 
 if [ "${#PUBKEYS[@]}" -eq 0 ]; then
-  gum log --level info "no ~/.ssh/*.pub found -- paste one ssh public key"
-  line="$(gum input --header "SSH pubkey" --placeholder "ssh-ed25519 AAAA..." --width 100)"
-  if [ -z "$line" ]; then
-    gum log --level error "no SSH key provided -- aborting"
-    exit 1
+  if gum confirm "No SSH key in ~/.ssh. Generate an ed25519 pair?"; then
+    mkdir -p "$HOME/.ssh"
+    chmod 700 "$HOME/.ssh"
+    ssh-keygen -t ed25519 -f "$HOME/.ssh/id_ed25519" -N "" -C "${USER:-nixops}@$(hostname)" >/dev/null
+    key="$(cat "$HOME/.ssh/id_ed25519.pub")"
+    CHOSEN_KEYS+=("$key")
+    crumb "ssh key: generated ~/.ssh/id_ed25519"
+  else
+    line="$(gum input --header "SSH pubkey" --placeholder "ssh-ed25519 AAAA..." --width 100)"
+    if [ -z "$line" ]; then
+      gum log --level error "no SSH key provided -- aborting"
+      exit 1
+    fi
+    CHOSEN_KEYS+=("$line")
+    crumb "ssh key: (pasted)"
   fi
-  CHOSEN_KEYS+=("$line")
-  crumb "ssh key: (pasted)"
 else
   # Single-select from ~/.ssh/*.pub via gum choose. gum choose takes over
   # the alternate screen for the duration of the picker; that is fine

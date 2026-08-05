@@ -49,7 +49,7 @@
       newCmd = pkgs.writeShellApplication {
         name = "new";
         runtimeInputs = with pkgs; [
-          gum age git gawk gnused coreutils findutils
+          gum age openssh git gawk gnused coreutils findutils
           nixVersions.latest
         ];
         text = ''
@@ -169,23 +169,16 @@
                 };
               };
             };
-            # First-login: auto-provision the ops identity and scaffold the
-            # fleet at ~/<hostname> if it does not exist yet. Sourced by
-            # every login shell, but each step is a no-op after the first
-            # time.
+            # First-login: scaffold the fleet at ~/<hostname> if it does
+            # not exist yet, then cd there. Key generation (ssh + age)
+            # lives inside `new` so the workflow is identical to running
+            # `new` on a native workstation. Sourced by every login shell;
+            # both steps are no-ops after the first time.
             environment.etc."profile.d/opsvm-firstlogin.sh".text = ''
               # shellcheck shell=sh
               if [ "$(id -un)" = "ops" ]; then
                 hn=$(hostname)
                 fleet_dir="$HOME/$hn"
-                if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
-                  echo "opsvm: generating ~/.ssh/id_ed25519"
-                  ssh-keygen -t ed25519 -C "opsvm-$hn" -f "$HOME/.ssh/id_ed25519" -N "" >/dev/null
-                fi
-                if [ ! -f "$HOME/.config/sops/age/keys.txt" ]; then
-                  echo "opsvm: generating ~/.config/sops/age/keys.txt"
-                  age-keygen -o "$HOME/.config/sops/age/keys.txt" 2>/dev/null
-                fi
                 if [ -d "$fleet_dir" ] && [ ! -f "$fleet_dir/flake.nix" ]; then
                   echo "opsvm: scaffolding fleet '$hn' at $fleet_dir"
                   (cd "$HOME" && new "$hn")
