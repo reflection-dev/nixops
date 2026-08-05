@@ -12,11 +12,11 @@ _Your servers, as code. Reproducible, rollback-safe, rebuildable by any teammate
 
 </div>
 
-Built on [NixOS](https://nixos.org). It wraps [nixos-anywhere](https://github.com/nix-community/nixos-anywhere)
-for one-command remote installs on any SSH-reachable Linux, [deploy-rs](https://github.com/serokell/deploy-rs)
-for fleet-wide updates with automatic rollback, and [sops-nix](https://github.com/Mic92/sops-nix)
-for secret management that never leaves your laptop -- plus a scaffolding
-wizard and an ephemeral operator VM you can throw away.
+Built on [NixOS](https://nixos.org). A single repo describes your set of
+servers as plain data -- hostnames, secrets, disks, and per-host
+configuration. Interactive wizards add hosts, provision secrets, install
+NixOS on any SSH-reachable Linux, and roll fleet-wide updates out with
+automatic rollback -- plus an ephemeral operator VM you can throw away.
 
 > **New to NixOS?** The [zero-to-fleet tutorial](docs/overview/index.md) starts
 > from "what even is this" and ends with you running a real fleet -- no prior
