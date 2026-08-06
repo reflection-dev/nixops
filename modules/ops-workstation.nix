@@ -129,8 +129,13 @@ in
       # INTERACTIVE_COMMENTS: treat `# ...` at a prompt as a comment
       # (like bash does by default) so operators can paste annotated
       # command snippets without zsh throwing "command not found: #".
+      # ZSH_HIGHLIGHT_STYLES[comment]: default is `fg=black,bold` which
+      # renders as bright-white on dark terminal backgrounds. Palette
+      # index 8 (bright-black) is real grey across every theme.
       interactiveShellInit = ''
         setopt INTERACTIVE_COMMENTS
+        typeset -gA ZSH_HIGHLIGHT_STYLES
+        ZSH_HIGHLIGHT_STYLES[comment]='fg=8'
       '';
     };
     # Provision an empty ~/.zshrc so zsh-newuser-install (the
