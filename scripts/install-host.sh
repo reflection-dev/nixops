@@ -146,6 +146,10 @@ EOF
     # duplicate would win by first-match and mask the host recipient.
     # Rule blocks are our own 3-line shape (path_regex/key_groups/age).
     tmp2="$(mktemp)"
+    # Match the literal `  - path_regex: secrets/<name>\.yaml$` line
+    # that set-secret writes (\ and $ are literal chars in the file,
+    # not regex metacharacters -- so `awk $0 == pat` fixed-string
+    # comparison is what we want, not a regex).
     awk -v pat="  - path_regex: secrets/${NAME}\\.yaml\$" '
       BEGIN { skip = 0 }
       skip > 0 { skip--; next }
