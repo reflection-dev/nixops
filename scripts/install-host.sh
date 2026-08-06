@@ -112,8 +112,8 @@ EOF
     fi
   else
     gum log --level info "adding anchor &${NAME} to .sops.yaml"
-    # Append the host anchor and a matching creation_rule. Very light-touch
-    # editing so it does not fight with a hand-tuned .sops.yaml.
+    # Append the host anchor. Very light-touch editing so it does not
+    # fight with a hand-tuned .sops.yaml.
     tmp="$(mktemp)"
     awk -v host="${NAME}" -v recip="${AGE_RECIPIENT}" '
       BEGIN { in_keys=0; last_anchor_idx=0; buf_n=0 }
@@ -141,6 +141,19 @@ EOF
       }
     ' .sops.yaml > "$tmp"
 
+    # A prior `set-secret` may have appended a rule for this file with
+    # admin-only recipients. Drop it before appending the full one -- a
+    # duplicate would win by first-match and mask the host recipient.
+    # Rule blocks are our own 3-line shape (path_regex/key_groups/age).
+    tmp2="$(mktemp)"
+    awk -v pat="  - path_regex: secrets/${NAME}\\.yaml\$" '
+      BEGIN { skip = 0 }
+      skip > 0 { skip--; next }
+      $0 == pat { skip = 2; next }
+      { print }
+    ' "$tmp" > "$tmp2"
+    mv "$tmp2" "$tmp"
+
     admins=$(grep -oE '^  - &admin_[[:alnum:]_]+' "$tmp" | awk '{print $NF}' | sed 's/^&//')
     age_list=""
     for a in $admins "${NAME}"; do age_list="${age_list}*${a}, "; done
@@ -157,9 +170,6 @@ EOF
       sops updatekeys --yes "secrets/${NAME}.yaml"
     fi
   fi
-
-  gum log --level info "checking sops secrets for ${NAME}"
-  update-secrets "$NAME"
 fi
 
 EXTRA="$(mktemp -d)"
