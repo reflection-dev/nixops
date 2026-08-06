@@ -85,7 +85,7 @@ in
       isNormalUser = true;
       uid = cfg.uid;
       extraGroups = [ "wheel" ];
-      shell = pkgs.bash;
+      shell = pkgs.zsh;
       # Empty password unlocks only the local console; sshd still refuses
       # password auth (disabled above) so remote access stays key-only.
       initialHashedPassword = "";
@@ -115,6 +115,70 @@ in
         deploy-rs
       ])
       ++ cfg.extraPackages;
+
+    # Interactive shell: zsh with the two must-have plugins (fish-style
+    # ghost autosuggestions from history, and syntax highlighting as
+    # you type). Shell scripts still run in their shebang's interpreter
+    # (bash, sh, ...), so the tooling is unaffected.
+    programs.zsh = {
+      enable = true;
+      autosuggestions.enable = true;
+      syntaxHighlighting.enable = true;
+      enableCompletion = true;
+      histSize = 10000;
+    };
+    # Provision an empty ~/.zshrc so zsh-newuser-install (the
+    # "New Z Shell configuration" wizard) skips on first login --
+    # the actual config comes from /etc/zshrc (programs.zsh above).
+    systemd.tmpfiles.rules = [
+      "f /home/${cfg.user}/.zshrc 0644 ${cfg.user} users -"
+    ];
+
+    # Auto-load per-project devShells on `cd`. With nix-direnv, the
+    # scaffolded .envrc (`use flake`) puts the whole flake devShell on
+    # PATH the first time the operator enters a fleet directory.
+    programs.direnv = {
+      enable = true;
+      nix-direnv.enable = true;
+    };
+
+    # Cross-shell prompt with git/nix context. Named ANSI colours so
+    # the terminal emulator's theme owns the actual RGB -- change the
+    # theme, prompt follows. Compact two-line layout: context on top,
+    # the input character alone on the bottom line.
+    programs.starship = {
+      enable = true;
+      settings = {
+        add_newline = true;
+        format = "$directory$git_branch$git_status$nix_shell$line_break$character";
+        character = {
+          success_symbol = "[>](bold cyan)";
+          error_symbol = "[>](bold red)";
+        };
+        directory = {
+          style = "bold blue";
+          truncation_length = 3;
+          truncate_to_repo = false;
+        };
+        git_branch = {
+          symbol = "";
+          style = "purple";
+          format = "[$symbol$branch]($style) ";
+        };
+        git_status = {
+          style = "yellow";
+          format = "[$all_status$ahead_behind]($style) ";
+        };
+        nix_shell = {
+          style = "cyan";
+          format = "[$symbol$state]($style) ";
+          impure_msg = "nix";
+          pure_msg = "nix";
+          unknown_msg = "";
+          heuristic = true;
+        };
+      };
+    };
 
     environment.etc."motd".text = ''
       nixops operator workstation -- logged in as ${cfg.user}
