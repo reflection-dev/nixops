@@ -19,7 +19,10 @@
   boot.loader = {
     grub = {
       enable = true;
-      device = "/dev/sda";
+      # `devices` (list) is the modern form; `device` (scalar) gets
+      # forwarded to `mirroredBoots.[0].devices` and can double up
+      # with any other module that touches the same option.
+      devices = [ "/dev/sda" ];
       efiSupport = false;
     };
     # systemd-boot is UEFI-only -- explicitly disable to make the
