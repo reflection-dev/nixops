@@ -195,8 +195,66 @@ consumes it, restart when the secret changes.
 - `restartTriggers = [ config.sops.secrets.stripe_secret.sopsFile ]`
   makes the service restart when the encrypted secret file changes
   (Nix hashes the `.sopsFile` path).
-- After adding this to a module, run `update-secrets web-1` to
-  populate the value, then `deploy web-1`.
+- After adding this to a module, run `set-secret web-1 stripe_secret
+  <file>` to store the value, then `deploy web-1`.
+
+## Public HTTPS via caddy + Cloudflare Origin CA
+
+The most common "serve traffic to the internet" recipe: caddy
+terminates TLS with a **Cloudflare Origin CA** cert (issued from
+the Cloudflare dashboard, valid only when the client is CF's
+proxy) and CF handles the public-facing cert. No ACME/Let's
+Encrypt required, DNS-01 not required, no ports opened outbound
+for cert renewal -- just the cert files.
+
+```nix
+# hosts/demo/default.nix
+{ config, ... }: {
+  imports = [ ./hardware-configuration.nix ];
+
+  sops.secrets."cloudflare_origin_cert" = {
+    sopsFile = ../../secrets/demo.yaml;
+    owner = "caddy";
+    group = "caddy";
+    mode  = "0400";
+  };
+  sops.secrets."cloudflare_origin_key" = {
+    sopsFile = ../../secrets/demo.yaml;
+    owner = "caddy";
+    group = "caddy";
+    mode  = "0400";
+  };
+
+  networking.firewall.allowedTCPPorts = [ 80 443 ];
+
+  services.caddy = {
+    enable = true;
+    virtualHosts."demo.example.com".extraConfig = ''
+      tls ${config.sops.secrets."cloudflare_origin_cert".path} \
+          ${config.sops.secrets."cloudflare_origin_key".path}
+      respond "hello world" 200
+    '';
+  };
+}
+```
+
+Setup:
+
+1. In Cloudflare dashboard: SSL/TLS -> Origin Server ->
+   Create Certificate. Download the cert and key files.
+2. Add a DNS A record for `demo.example.com` pointing at the
+   host, orange-cloud (proxied) ON. CF terminates the public
+   cert; your caddy terminates the internal one.
+3. On the operator VM:
+   ```
+   set-secret demo cloudflare_origin_cert cf-origin.crt
+   set-secret demo cloudflare_origin_key  cf-origin.key
+   ```
+4. `install-host demo` (first time) or `deploy demo` (updates).
+
+Rotating the Origin CA cert is just steps 3-4 again with the new
+files -- CF issues Origin CA certs valid up to 15 years, so this
+is rare.
 
 ## Add a package to a single host
 
