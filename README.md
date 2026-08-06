@@ -2,7 +2,7 @@
 
 # NixOps
 
-_Your servers, as code. Reproducible, rollback-safe, rebuildable by any teammate._
+_Your servers as code. Reproducible, rollback-safe, rebuildable by any teammate._
 
 <a href="https://github.com/reflection-dev/nixops/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/reflection-dev/nixops/actions/workflows/ci.yml/badge.svg"></a>
 <a href="https://nixos.org"><img alt="Nix flake" src="https://img.shields.io/badge/Nix-flake-5277C3?logo=nixos&amp;logoColor=white"></a>
