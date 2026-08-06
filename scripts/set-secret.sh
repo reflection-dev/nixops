@@ -68,6 +68,10 @@ if ! grep -qE "^  - path_regex: secrets/${HOST}\\.yaml\\\$" .sops.yaml; then
   age_list=""
   for a in $admins; do age_list="${age_list}*${a}, "; done
   age_list="${age_list%, }"
+  # Normalise the empty inline list from the scaffold (`creation_rules: []`)
+  # into a block header (`creation_rules:`) so append lines aren't stray
+  # items after a self-closed list.
+  sed -i -E 's|^creation_rules:[[:space:]]*\[\][[:space:]]*$|creation_rules:|' .sops.yaml
   [ -n "$(tail -c 1 .sops.yaml)" ] && printf "\n" >> .sops.yaml
   {
     printf "  - path_regex: secrets/%s\\.yaml\$\n" "$HOST"
