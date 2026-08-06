@@ -1,6 +1,6 @@
 <div align="center">
 
-# nixops
+# NixOps
 
 _Your servers, as code. Reproducible, rollback-safe, rebuildable by any teammate._
 
