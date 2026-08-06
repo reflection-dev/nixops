@@ -158,7 +158,11 @@ EOF
     # that set-secret writes (\ and $ are literal chars in the file,
     # not regex metacharacters -- so `awk $0 == pat` fixed-string
     # comparison is what we want, not a regex).
-    awk -v pat="  - path_regex: secrets/${NAME}\\.yaml\$" '
+    # Bash '\\\\.' -> awk sees '\\.' -> stored as '\.' (matches the
+    # literal backslash+dot in the file). Bare '\\.' triggers awk's
+    # 'escape sequence \. treated as plain .' warning and strips the
+    # backslash, making the compare fail.
+    awk -v pat="  - path_regex: secrets/${NAME}\\\\.yaml\$" '
       BEGIN { skip = 0 }
       skip > 0 { skip--; next }
       $0 == pat { skip = 2; next }
