@@ -59,7 +59,10 @@ SECRETS_FILE="secrets/${HOST}.yaml"
 # add the rule ourselves, use just the admin recipient(s) -- install-host
 # adds the host itself and re-encrypts later. Both orderings work:
 #   set-secret then install-host, or install-host then set-secret.
-if ! grep -qE "^  - path_regex: secrets/${HOST}\\.yaml\\\$" .sops.yaml; then
+# Fixed-string match: the rule line has literal '\.' and '$' chars
+# (sops path_regex is Perl-ish), so a regex compare would need double
+# escaping. `grep -F` compares as a plain string -- clearer + correct.
+if ! grep -qF "  - path_regex: secrets/${HOST}\\.yaml\$" .sops.yaml; then
   admins="$(grep -oE '^  - &admin_[[:alnum:]_]+' .sops.yaml | awk '{print $NF}' | sed 's/^&//')"
   if [ -z "$admins" ]; then
     gum log --level error ".sops.yaml has no admin recipient (expected an anchor named '&admin_<something>')"
