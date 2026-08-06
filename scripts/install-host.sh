@@ -30,6 +30,14 @@ for f in flake.nix hosts.nix; do
   fi
 done
 
+# Nix flake eval ignores files not tracked by git -- untracked files
+# added by add-host or a hand edit would silently be invisible to
+# nixos-anywhere's evaluation. Stage everything first so the eval sees
+# the current tree. `git add` is idempotent; no commit is made.
+if [ -d .git ] && command -v git >/dev/null 2>&1; then
+  git add -A
+fi
+
 NIX=(nix --extra-experimental-features "nix-command flakes")
 
 IP="$("${NIX[@]}" eval --raw --impure --expr "(import ./hosts.nix).${NAME}.ip" 2>/dev/null || true)"
