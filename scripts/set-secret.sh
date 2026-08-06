@@ -54,6 +54,29 @@ fi
 
 SECRETS_FILE="secrets/${HOST}.yaml"
 
+# Ensure a creation_rule for secrets/<host>.yaml exists in .sops.yaml.
+# Without it sops has nothing to match on and encryption fails. If we
+# add the rule ourselves, use just the admin recipient(s) -- install-host
+# adds the host itself and re-encrypts later. Both orderings work:
+#   set-secret then install-host, or install-host then set-secret.
+if ! grep -qE "^  - path_regex: secrets/${HOST}\\.yaml\\\$" .sops.yaml; then
+  admins="$(grep -oE '^  - &admin_[[:alnum:]_]+' .sops.yaml | awk '{print $NF}' | sed 's/^&//')"
+  if [ -z "$admins" ]; then
+    gum log --level error ".sops.yaml has no admin recipient (expected an anchor named '&admin_<something>')"
+    exit 1
+  fi
+  age_list=""
+  for a in $admins; do age_list="${age_list}*${a}, "; done
+  age_list="${age_list%, }"
+  [ -n "$(tail -c 1 .sops.yaml)" ] && printf "\n" >> .sops.yaml
+  {
+    printf "  - path_regex: secrets/%s\\.yaml\$\n" "$HOST"
+    printf "    key_groups:\n"
+    printf "      - age: [ %s ]\n" "$age_list"
+  } >> .sops.yaml
+  gum log --level info "added creation_rule for $SECRETS_FILE (recipients: $age_list)"
+fi
+
 # Ensure the encrypted file exists (create empty {} + encrypt to the
 # recipients .sops.yaml chose for this path). Copied verbatim from
 # update-secrets.sh -- keep in sync if either changes.
