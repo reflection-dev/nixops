@@ -197,19 +197,24 @@ this way is safe.
 
 ## Adding secrets in this repo
 
-Three workflows, pick per situation:
+Two workflows, pick per situation:
 
-- **Interactive** (through `update-secrets`, driven by what the
-  NixOS config declares -- see below). Recommended for filling
-  values you type by hand.
-- **Non-interactive** (`set-secret <host> <key> <file>`). Reads the
-  value from a file (or `-` for stdin) and writes it through `sops
-  --set`. Useful when the value comes from another command
-  (`openssl rand ...`, `age-keygen ...`, `kubectl get secret ...`)
-  or when scripting a bootstrap. Existing values are overwritten.
+- **From a file** (`set-secret <host> <key> <file>`). Reads the
+  value from a file (or `-` for stdin) and writes it through
+  `sops --set`. This is the recommended path: multi-line values
+  (PEMs, private keys, JSON blobs) survive intact, and scripted
+  bootstraps have a single-line command. If `.sops.yaml` has no
+  `creation_rule` for the target file yet, `set-secret` adds one
+  with the admin recipient(s), so it works even before the first
+  `install-host` for that host.
 - **Manual** with `sops secrets/<host>.yaml`. Full editor, edits
-  every field at once. Handy for rare surgical fixes; make sure the
-  file exists and `.sops.yaml` has a matching `creation_rule`.
+  every field at once. Handy for rare surgical fixes; make sure
+  the file exists and `.sops.yaml` has a matching `creation_rule`.
+
+Both orderings work: `set-secret` before or after `install-host`.
+When `install-host` runs, it adds the host's own recipient to the
+creation_rule and calls `sops updatekeys` -- any values you set
+earlier are re-encrypted for the new recipient set.
 
 ## `sops.secrets.*` -- the NixOS-side view
 
@@ -331,31 +336,29 @@ that key -- move any dependent modules off shared before revoking.
 access to shared material. Automation here would silently expand
 the blast radius on every `add-host`.
 
-## How `update-secrets` works
+## `update-secrets` -- recipient resync
 
-Every time you or `install-host` need to fill in missing
-secrets, `update-secrets [host]` in the devShell does the
-inventory-driven equivalent of running `sops` by hand. From the top
-of [`scripts/update-secrets.sh`](../../scripts/update-secrets.sh):
+`update-secrets [host]` in the devShell is a thin wrapper over
+`sops updatekeys --yes secrets/<host>.yaml`. It re-encrypts a
+file's recipient wrappers to match the current recipient set in
+`.sops.yaml`; values themselves are untouched.
 
-```bash
-# Reads the expected keys from
-#   .#nixosConfigurations.<name>.config.sops.secrets
-# and prompts (via gum) for any that are not yet set in
-# secrets/<name>.yaml. Existing values are left untouched.
-```
+Called without an argument, it walks every `secrets/*.yaml` in
+the fleet and resyncs each.
 
-The clever part: the list of "secrets this host needs" is not a
-separate config file. It is *the same* `sops.secrets.*` attribute
-you already declared in a NixOS module. `update-secrets` reads it
-with `nix eval` and prompts you for whichever ones do not yet exist
-in the encrypted file.
+Use it when:
 
-The consequence: you never have a mismatch between "secrets the
-system expects" and "secrets the yaml has". If you add a new
-`sops.secrets.foo` to a module and run `deploy`, it will fail at
-boot; but running `update-secrets` first will notice `foo` is
-missing and prompt you to fill it.
+- You rotate an admin key (edit `.sops.yaml`, then
+  `update-secrets` -- every file gets re-encrypted for the new
+  admin).
+- You add or remove a shared-file recipient by hand (edit the
+  rule's `age: [...]` list, then `update-secrets shared`).
+- `.sops.yaml` and an encrypted file's `sops:` block have drifted
+  (for example after a merge conflict).
+
+`install-host` calls `sops updatekeys` for you when it modifies
+`.sops.yaml`, so you rarely need to reach for `update-secrets`
+directly.
 
 ## Rotating a recipient
 
