@@ -19,14 +19,16 @@
   boot.loader = {
     grub = {
       enable = true;
-      # `devices` (list) is the modern form; `device` (scalar) gets
-      # forwarded to `mirroredBoots.[0].devices` and can double up
-      # with any other module that touches the same option.
-      devices = [ "/dev/sda" ];
       efiSupport = false;
+      # NB: intentionally do NOT set `device`/`devices` here -- disko's
+      # bios_grub partition (EF02, below) makes disko-lib auto-populate
+      # boot.loader.grub.devices from the disk hosting that partition.
+      # Duplicating it triggers the 'You cannot have duplicated devices
+      # in mirroredBoots' assertion.
     };
-    # systemd-boot is UEFI-only -- explicitly disable to make the
-    # intent obvious and to catch accidental double-config.
+    # systemd-boot is UEFI-only -- explicitly disable so a target that
+    # was previously installed with the hetzner-vm preset does not
+    # merge two competing bootloader configs.
     systemd-boot.enable = false;
   };
 
