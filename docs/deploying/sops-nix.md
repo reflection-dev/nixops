@@ -244,6 +244,93 @@ sops-nix give you the option value.
 
 Full option reference: [sops-nix README -- NixOS options](https://github.com/Mic92/sops-nix#usage-example).
 
+## Shared secrets across hosts (manual)
+
+The default topology in this repo is **one file per host**
+(`secrets/<host>.yaml`). Every secret a host needs lives in that
+file, encrypted for that host alone. That is the safest posture:
+least-privilege by default, and rotating a host's SSH key rotates
+its recipient without touching anything else.
+
+Sometimes you have a secret several hosts need: a shared
+CloudFlare API token for DNS, a monitoring token, a backup
+encryption passphrase. Duplicating the plaintext into every
+per-host file works but rotates poorly. sops supports a
+shared-file pattern natively; the repo doesn't automate it (yet),
+so this section is the manual recipe.
+
+**Step 1 -- declare a shared file in `.sops.yaml`.** Add a keys
+group and a `creation_rule` listing every host that should be
+able to decrypt it:
+
+```yaml
+keys:
+  - &admin_you   age1youradminkey...
+  - &web-1       age1web1derivedfromssh...
+  - &web-2       age1web2derivedfromssh...
+  - &db-1        age1db1derivedfromssh...
+
+creation_rules:
+  # per-host files (managed by install-host, unchanged)
+  - path_regex: secrets/web-1\.yaml$
+    key_groups:
+      - age: [ *admin_you, *web-1 ]
+  - path_regex: secrets/web-2\.yaml$
+    key_groups:
+      - age: [ *admin_you, *web-2 ]
+  - path_regex: secrets/db-1\.yaml$
+    key_groups:
+      - age: [ *admin_you, *db-1 ]
+
+  # shared file -- readable by whichever hosts you list here
+  - path_regex: secrets/shared\.yaml$
+    key_groups:
+      - age: [ *admin_you, *web-1, *web-2 ]
+```
+
+**Step 2 -- create the file and set values.** `set-secret`'s
+first argument is normally a host name; for shared files pass the
+basename you used in the `path_regex` above:
+
+```console
+$ set-secret shared cloudflare_api_token cf-token.txt
+```
+
+**Step 3 -- reference it from any host module that needs it:**
+
+```nix
+sops.secrets."cloudflare_api_token" = {
+  sopsFile = ../../secrets/shared.yaml;
+  owner    = "caddy";
+  group    = "caddy";
+  mode     = "0400";
+};
+```
+
+Both web-1 and web-2 will decrypt the same file at boot; db-1
+will not (it isn't in the shared rule).
+
+**Adding a new host to a shared file.** When you `add-host web-3`
+and want it to see `secrets/shared.yaml` too:
+
+1. Run `install-host web-3` first -- gets the `&web-3` anchor
+   into `.sops.yaml`.
+2. Hand-edit the shared rule's `age: [...]` list to include
+   `*web-3`.
+3. `sops updatekeys secrets/shared.yaml` -- re-encrypts the file
+   for the new recipient set.
+4. `deploy web-3` -- the new host now has the secret at boot.
+
+**Removing a host from shared.** Reverse: remove `*web-3` from
+the shared rule, `sops updatekeys secrets/shared.yaml`. The next
+`deploy web-3` (or a rebuild) will fail sops-nix decryption for
+that key -- move any dependent modules off shared before revoking.
+
+**Why not automate this?** The one manual step (editing the
+`age:` list) forces the operator to consciously grant a new host
+access to shared material. Automation here would silently expand
+the blast radius on every `add-host`.
+
 ## How `update-secrets` works
 
 Every time you or `install-host` need to fill in missing
