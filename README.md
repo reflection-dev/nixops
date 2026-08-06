@@ -8,7 +8,7 @@ _Your servers, as code. Reproducible, rollback-safe, rebuildable by any teammate
 <a href="https://nixos.org"><img alt="Nix flake" src="https://img.shields.io/badge/Nix-flake-5277C3?logo=nixos&amp;logoColor=white"></a>
 <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-7aa2f7"></a>
 
-<!-- HERO_GIF: recorded terminal demo lands in the next commit (see docs/operating/opsvm.md) -->
+<a href="https://media.reflection.dev/nixops.mov"><img alt="nixops end-to-end walkthrough" src="https://media.reflection.dev/nixops.png" width="720"></a>
 
 </div>
 
