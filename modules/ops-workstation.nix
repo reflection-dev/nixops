@@ -126,6 +126,12 @@ in
       syntaxHighlighting.enable = true;
       enableCompletion = true;
       histSize = 10000;
+      # INTERACTIVE_COMMENTS: treat `# ...` at a prompt as a comment
+      # (like bash does by default) so operators can paste annotated
+      # command snippets without zsh throwing "command not found: #".
+      interactiveShellInit = ''
+        setopt INTERACTIVE_COMMENTS
+      '';
     };
     # Provision an empty ~/.zshrc so zsh-newuser-install (the
     # "New Z Shell configuration" wizard) skips on first login --
