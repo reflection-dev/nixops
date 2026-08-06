@@ -162,7 +162,8 @@ sane cases). Any host can opt out of any individual piece.
 1. Have an age key at `~/.config/sops/age/keys.txt` (or let the wizard
    generate one). Its recipient goes into `.sops.yaml` as `&admin_<name>`.
 2. `add-host <name>` scaffolds a host entry and prompts for a disk
-   layout preset (currently `hetzner-vm`, or `custom` for hand-written
+   layout preset (`hetzner-vm` for UEFI Cloud VMs, `hetzner-bios`
+   for legacy-BIOS Dedicated boxes, or `custom` for hand-written
    `disko.nix`).
 3. `install-host <name>` runs `nixos-anywhere`:
    - generates the target's `ssh_host_ed25519_key` locally,
@@ -192,7 +193,8 @@ dives.
   layer lives in [reflection-dev/castle](https://github.com/reflection-dev/castle),
   which will build on top of `nixops`.
 - **A catalog of disko recipes.** `nixops` ships one preset per common
-  shape (currently just `hetzner-vm`, a single-disk UEFI VM) plus an
+  shape (`hetzner-vm` for UEFI Cloud, `hetzner-bios` for legacy-BIOS
+  Dedicated -- both single-disk with GPT) plus an
   always-present `custom` option. It is not aiming to become a zoo of
   provider-specific layouts; anything past the trivial single-disk case
   is a `custom` disko.nix or a preset PR. See
